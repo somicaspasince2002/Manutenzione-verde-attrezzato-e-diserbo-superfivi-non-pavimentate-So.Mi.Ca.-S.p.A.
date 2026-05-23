@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SO.MI.CA. — Gestione Verde e Diserbo</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f2ed;
+  --bg2: #eceae3;
+  --card: #ffffff;
+  --border: #d8d5cc;
+  --text: #1a1916;
+  --text2: #5a5852;
+  --text3: #8a877e;
+  --green: #2d6a4f;
+  --green-l: #e8f5ee;
+  --green-m: #52b788;
+  --amber: #b5450b;
+  --amber-l: #fef3e2;
+  --amber-m: #f4a261;
+  --blue: #1a5276;
+  --blue-l: #e8f0f7;
+  --blue-m: #5b9bd5;
+  --red: #c0392b;
+  --red-l: #fdf2f0;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; }
+
+/* ---- LAYOUT ---- */
+#app { display: flex; flex-direction: column; min-height: 100vh; }
+#topbar { background: var(--text); color: #f0ede6; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 52px; position: sticky; top: 0; z-index: 100; }
+#topbar-left { display: flex; align-items: center; gap: 12px; }
+#topbar-logo { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #a8d8b8; }
+#topbar-sep { color: #3a3830; }
+#topbar-title { font-size: 0.9rem; font-weight: 400; color: #c8c4b8; }
+#topbar-user { font-size: 0.82rem; display: flex; align-items: center; gap: 10px; }
+#topbar-badge { background: #2a2820; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; }
+#btn-logout { background: none; border: 1px solid #3a3830; color: #c8c4b8; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+#btn-logout:hover { background: #2a2820; }
+
+#main { display: flex; flex: 1; }
+#sidebar { width: 220px; background: var(--card); border-right: 1px solid var(--border); padding: 20px 0; flex-shrink: 0; }
+@media (max-width: 700px) { #sidebar { display: none; } }
+.sidebar-section { padding: 0 12px 16px; }
+.sidebar-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); padding: 0 8px 8px; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: var(--text2); font-size: 0.88rem; transition: all 0.12s; border: none; background: none; width: 100%; text-align: left; }
+.nav-item:hover { background: var(--bg); color: var(--text); }
+.nav-item.active { background: var(--green-l); color: var(--green); font-weight: 500; }
+.nav-item.active.verde { background: var(--green-l); color: var(--green); }
+.nav-item.active.diserbo { background: var(--amber-l); color: var(--amber); }
+.nav-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-verde { background: var(--green-m); }
+.dot-diserbo { background: var(--amber-m); }
+.dot-admin { background: var(--blue-m); }
+.sidebar-divider { height: 1px; background: var(--border); margin: 8px 12px 16px; }
+
+#content { flex: 1; padding: 24px; overflow-y: auto; max-width: 900px; }
+@media (max-width: 700px) { #content { padding: 16px; } }
+
+/* ---- LOGIN ---- */
+#login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
+.login-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
+.login-logo { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+.login-title { font-size: 1.4rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.login-sub { font-size: 0.85rem; color: var(--text3); margin-bottom: 28px; }
+.login-hint { margin-top: 20px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 0.8rem; color: var(--text3); }
+.login-hint strong { color: var(--text2); }
+
+/* ---- FORM ELEMENTS ---- */
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--text2); margin-bottom: 5px; }
+.field input, .field select, .field textarea { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 12px; background: var(--bg); color: var(--text); outline: none; transition: border 0.15s; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green-m); background: #fff; }
+.field textarea { resize: vertical; min-height: 70px; }
+.field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a877e' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 32px; }
+
+/* ---- BUTTONS ---- */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius); border: none; cursor: pointer; font-size: 0.88rem; font-weight: 500; transition: all 0.15s; }
+.btn-primary { background: var(--green); color: #fff; }
+.btn-primary:hover { background: #225a3e; }
+.btn-primary.amber { background: var(--amber); }
+.btn-primary.amber:hover { background: #963a09; }
+.btn-secondary { background: var(--bg); border: 1px solid var(--border); color: var(--text2); }
+.btn-secondary:hover { background: var(--bg2); color: var(--text); }
+.btn-danger { background: var(--red-l); color: var(--red); border: 1px solid #f5c6c0; }
+.btn-danger:hover { background: #f9dbd8; }
+.btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+.btn-full { width: 100%; justify-content: center; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---- CARDS ---- */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.card-title { font-size: 1rem; font-weight: 600; color: var(--text); }
+.card-sub { font-size: 0.82rem; color: var(--text3); margin-top: 2px; }
+
+/* ---- PAGE HEADER ---- */
+.page-header { margin-bottom: 24px; }
+.page-title { font-size: 1.35rem; font-weight: 600; color: var(--text); }
+.page-sub { font-size: 0.88rem; color: var(--text3); margin-top: 3px; }
+.module-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-bottom: 10px; }
+.badge-verde { background: var(--green-l); color: var(--green); }
+.badge-diserbo { background: var(--amber-l); color: var(--amber); }
+.badge-admin { background: var(--blue-l); color: var(--blue); }
+
+/* ---- REGISTRAZIONE FORM ---- */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+.checklist { display: flex; flex-direction: column; gap: 6px; }
+.check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; transition: all 0.12s; }
+.check-item:hover { border-color: var(--green-m); background: var(--green-l); }
+.check-item.selected { border-color: var(--green-m); background: var(--green-l); }
+.check-item.selected.diserbo-check { border-color: var(--amber-m); background: var(--amber-l); }
+.check-item input[type=checkbox] { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
+.check-item.diserbo-check input[type=checkbox] { accent-color: var(--amber); }
+.check-label { font-size: 0.88rem; color: var(--text); line-height: 1.4; }
+.check-extra { margin-top: 8px; padding: 8px 12px; background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+.check-extra label { font-size: 0.8rem; color: var(--text2); font-weight: 500; margin-bottom: 4px; display: block; }
+
+/* Operatori selector */
+.operatori-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.op-chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--text2); cursor: pointer; font-size: 0.83rem; transition: all 0.12s; }
+.op-chip:hover { border-color: var(--green-m); color: var(--text); }
+.op-chip.selected { background: var(--green-l); border-color: var(--green-m); color: var(--green); font-weight: 500; }
+.op-chip.selected.diserbo { background: var(--amber-l); border-color: var(--amber-m); color: var(--amber); }
+
+/* ---- TABELLA REGISTRAZIONI ---- */
+.reg-list { display: flex; flex-direction: column; gap: 10px; }
+.reg-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; cursor: pointer; transition: all 0.12s; }
+.reg-card:hover { border-color: var(--green-m); box-shadow: var(--shadow); }
+.reg-card.diserbo:hover { border-color: var(--amber-m); }
+.reg-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.reg-card-date { font-size: 0.78rem; font-weight: 600; color: var(--text3); font-family: var(--mono); white-space: nowrap; }
+.reg-card-area { font-size: 0.95rem; font-weight: 500; color: var(--text); }
+.reg-card-settore { font-size: 0.8rem; color: var(--text3); }
+.reg-card-bottom { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
+.tag-green { background: var(--green-l); color: var(--green); }
+.tag-amber { background: var(--amber-l); color: var(--amber); }
+.tag-blue { background: var(--blue-l); color: var(--blue); }
+.tag-gray { background: var(--bg2); color: var(--text3); }
+.tag-ok { background: #e8f5ee; color: #2d6a4f; }
+.tag-pending { background: #fef9e7; color: #b7770d; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+/* ---- FILTRI ---- */
+.filtri-bar { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.filtri-bar .field { margin: 0; min-width: 150px; flex: 1; }
+.filtri-bar .field label { margin-bottom: 3px; }
+
+/* ---- MODAL ---- */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
+.modal { background: var(--card); border-radius: var(--radius-lg); width: 100%; max-width: 620px; box-shadow: var(--shadow-lg); margin: auto; }
+.modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 1.05rem; font-weight: 600; }
+.modal-close { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 1.2rem; line-height: 1; padding: 4px; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 20px 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ---- STATS ---- */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+.stat-num { font-size: 1.8rem; font-weight: 600; line-height: 1; }
+.stat-label { font-size: 0.78rem; color: var(--text3); margin-top: 4px; }
+.stat-verde .stat-num { color: var(--green); }
+.stat-diserbo .stat-num { color: var(--amber); }
+.stat-blue .stat-num { color: var(--blue); }
+
+/* ---- ADMIN ---- */
+.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .admin-grid { grid-template-columns: 1fr; } }
+.list-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); margin-bottom: 6px; }
+.list-item-name { font-size: 0.88rem; font-weight: 500; }
+.list-item-sub { font-size: 0.78rem; color: var(--text3); }
+.list-actions { display: flex; gap: 6px; }
+
+/* ---- UTILITY ---- */
+.gap-12 { display: flex; flex-direction: column; gap: 12px; }
+.gap-16 { display: flex; flex-direction: column; gap: 16px; }
+.mt-16 { margin-top: 16px; }
+.mt-8 { margin-top: 8px; }
+.txt-center { text-align: center; }
+.txt-muted { color: var(--text3); font-size: 0.85rem; }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.hidden { display: none !important; }
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #f0ede6; padding: 12px 18px; border-radius: var(--radius); font-size: 0.88rem; z-index: 999; box-shadow: var(--shadow-lg); opacity: 0; transition: opacity 0.2s; pointer-events: none; max-width: 320px; }
+.toast.show { opacity: 1; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text3); }
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.9rem; }
+.section-title { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 12px; }
+
+/* MOBILE NAV */
+#mobile-nav { display: none; background: var(--card); border-top: 1px solid var(--border); position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding: 8px 0 4px; }
+@media (max-width: 700px) { #mobile-nav { display: flex; justify-content: space-around; } }
+@media (max-width: 700px) { #content { padding-bottom: 80px; } }
+.mnav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 4px 12px; color: var(--text3); font-size: 0.72rem; }
+.mnav-btn.active { color: var(--green); }
+.mnav-btn.active.diserbo { color: var(--amber); }
+.mnav-icon { font-size: 1.3rem; }
+
+/* PRINT */
+@media print {
+  #topbar, #sidebar, #mobile-nav, .no-print { display: none !important; }
+  #content { padding: 0; }
+  body { background: white; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><img src="data:image/png;base64,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" alt="SO.MI.CA." style="height:44px;margin-bottom:10px;display:block"></div>
+    <div class="login-title">Accesso al sistema</div>
+    <div class="login-sub">Gestione Verde e Diserbo — Carbonia</div>
+    <div class="field"><label>Username</label><input type="text" id="login-user" placeholder="es. mario.rossi" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn btn-primary btn-full" id="btn-login" onclick="doLogin()">Accedi</button>
+    <div class="login-hint">
+      <strong>Credenziali demo:</strong><br>
+      Admin: <code>admin</code> / <code>admin2024</code><br>
+      Operatore: <code>mario.rossi</code> / <code>somica2024</code><br>
+      Consultazione: <code>comune</code> / <code>comune2024</code>
+    </div>
+  </div>
+</div>
+
+<!-- APP PRINCIPALE -->
+<div id="app" class="hidden">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div id="topbar-left">
+      <div id="topbar-logo"><img src="data:image/png;base64,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" alt="SO.MI.CA." style="height:28px;filter:brightness(0) invert(1)"></div>
+      <div id="topbar-sep">·</div>
+      <div id="topbar-title">Verde &amp; Diserbo</div>
+    </div>
+    <div id="topbar-user">
+      <span id="topbar-badge">—</span>
+      <button id="btn-logout" onclick="doLogout()">Esci</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Verde Pubblico</div>
+        <button class="nav-item active verde" onclick="showPage('verde-nuova')" id="nav-verde-nuova">
+          <span class="nav-dot dot-verde"></span> Nuova registrazione
+        </button>
+        <button class="nav-item verde" onclick="showPage('verde-lista')" id="nav-verde-lista">
+          <span class="nav-dot dot-verde"></span> Registrazioni
+        </button>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Diserbo</div>
+        <button class="nav-item diserbo" onclick="showPage('diserbo-nuova')" id="nav-diserbo-nuova">
+          <span class="nav-dot dot-diserbo"></span> Nuova registrazione
+        </button>
+        <button class="nav-item diserbo" onclick="showPage('diserbo-lista')" id="nav-diserbo-lista">
+          <span class="nav-dot dot-diserbo"></span> Registrazioni
+        </button>
+      </div>
+      <div class="sidebar-divider" id="admin-divider"></div>
+      <div class="sidebar-section" id="admin-section">
+        <div class="sidebar-label">Amministrazione</div>
+        <button class="nav-item" onclick="showPage('admin-operatori')" id="nav-admin-operatori">
+          <span class="nav-dot dot-admin"></span> Operatori
+        </button>
+        <button class="nav-item" onclick="showPage('admin-patrimonio')" id="nav-admin-patrimonio">
+          <span class="nav-dot dot-admin"></span> Patrimonio
+        </button>
+        <button class="nav-item" onclick="showPage('admin-tipologie')" id="nav-admin-tipologie">
+          <span class="nav-dot dot-admin"></span> Tipologie lavorazioni
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content">
+
+      <!-- ======== VERDE - NUOVA REGISTRAZIONE ======== -->
+      <div id="page-verde-nuova" class="hidden">
+        <div class="page-header">
+          <div class="module-badge badge-verde">● Verde Pubblico</div>
+          <div class="page-title">Nuova registrazione</div>
+          <div class="page-sub">Registra un intervento di manutenzione del verde</div>
+        </div>
+        <div class="card">
+          <div class="gap-16">
+            <div class="form-row">
+              <div class="field"><label>Data intervento *</label><input type="date" id="v-data"></div>
+              <div class="field"><label>Ore lavorate *</label><input type="number" id="v-ore" min="0.5" max="24" step="0.5" placeholder="es. 4"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>Settore *</label>
+                <select id="v-settore" onchange="loadAreeVerde()">
+                  <option value="">— Seleziona settore —</option>
+                </select>
+              </div>
+              <div class="field"><label>Area specifica *</label>
+                <select id="v-area">
+                  <option value="">— Seleziona prima il settore —</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="section-title">Operatori coinvolti *</div>
+              <div class="operatori-grid" id="v-operatori-grid"></div>
+            </div>
+
+            <div>
+              <div class="section-title">Lavorazioni eseguite *</div>
+              <div class="checklist" id="v-lavorazioni-list"></div>
+            </div>
+
+            <div class="form-row">
+              <div class="field"><label>Stato</label>
+                <select id="v-completato">
+                  <option value="false">In corso / da terminare</option>
+                  <option value="true">Completato</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field"><label>Note giornaliere</label><textarea id="v-note" placeholder="Annotazioni, segnalazioni, comunicazioni relative alla giornata..."></textarea></div>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+              <button class="btn btn-secondary" onclick="resetFormVerde()">Annulla</button>
+              <button class="btn btn-primary" onclick="salvaRegistrazioneVerde()" id="btn-salva-verde">Salva registrazione</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== VERDE - LISTA ======== -->
+      <div id="page-verde-lista" class="hidden">
+        <div class="page-header">
+          <div class="module-badge badge-verde">● Verde Pubblico</div>
+          <div class="page-title">Registrazioni</div>
+          <div class="page-sub">Storico interventi manutenzione verde pubblico</div>
+        </div>
+        <div class="filtri-bar no-print">
+          <div class="field"><label>Dal</label><input type="date" id="vl-dal"></div>
+          <div class="field"><label>Al</label><input type="date" id="vl-al"></div>
+          <div class="field"><label>Settore</label>
+            <select id="vl-settore" onchange="loadAreeFiltroVerde()">
+              <option value="">Tutti</option>
+            </select>
+          </div>
+          <div class="field"><label>Area</label><select id="vl-area"><option value="">Tutte</option></select></div>
+          <div class="field"><label>Stato</label>
+            <select id="vl-stato">
+              <option value="">Tutti</option>
+              <option value="true">Completati</option>
+              <option value="false">In corso</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <button class="btn btn-primary" onclick="cercaVerde()">Cerca</button>
+            <button class="btn btn-secondary" onclick="stampaReport('verde')">🖨 Stampa</button>
+          </div>
+        </div>
+        <div class="stats-grid" id="vl-stats"></div>
+        <div class="reg-list" id="verde-lista-content">
+          <div class="empty-state"><div class="empty-state-icon">🌿</div><p>Imposta i filtri e clicca Cerca</p></div>
+        </div>
+      </div>
+
+      <!-- ======== DISERBO - NUOVA REGISTRAZIONE ======== -->
+      <div id="page-diserbo-nuova" class="hidden">
+        <div class="page-header">
+          <div class="module-badge badge-diserbo">● Diserbo Superfici</div>
+          <div class="page-title">Nuova registrazione</div>
+          <div class="page-sub">Registra un intervento di diserbo superfici non pavimentate</div>
+        </div>
+        <div class="card">
+          <div class="gap-16">
+            <div class="form-row">
+              <div class="field"><label>Data intervento *</label><input type="date" id="d-data"></div>
+              <div class="field"><label>Ore lavorate *</label><input type="number" id="d-ore" min="0.5" max="24" step="0.5" placeholder="es. 4"></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>Settore *</label>
+                <select id="d-settore" onchange="loadAreeDiserbo()">
+                  <option value="">— Seleziona settore —</option>
+                </select>
+              </div>
+              <div class="field"><label>Area specifica *</label>
+                <select id="d-area">
+                  <option value="">— Seleziona prima il settore —</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="section-title">Operatori coinvolti *</div>
+              <div class="operatori-grid" id="d-operatori-grid"></div>
+            </div>
+
+            <div>
+              <div class="section-title">Lavorazioni eseguite *</div>
+              <div class="checklist" id="d-lavorazioni-list"></div>
+            </div>
+
+            <div class="form-row">
+              <div class="field"><label>Stato</label>
+                <select id="d-completato">
+                  <option value="false">In corso / da terminare</option>
+                  <option value="true">Completato</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field"><label>Note giornaliere</label><textarea id="d-note" placeholder="Annotazioni, segnalazioni..."></textarea></div>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+              <button class="btn btn-secondary" onclick="resetFormDiserbo()">Annulla</button>
+              <button class="btn btn-primary amber" onclick="salvaRegistrazioneDiserbo()" id="btn-salva-diserbo">Salva registrazione</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== DISERBO - LISTA ======== -->
+      <div id="page-diserbo-lista" class="hidden">
+        <div class="page-header">
+          <div class="module-badge badge-diserbo">● Diserbo Superfici</div>
+          <div class="page-title">Registrazioni</div>
+          <div class="page-sub">Storico interventi diserbo superfici non pavimentate</div>
+        </div>
+        <div class="filtri-bar no-print">
+          <div class="field"><label>Dal</label><input type="date" id="dl-dal"></div>
+          <div class="field"><label>Al</label><input type="date" id="dl-al"></div>
+          <div class="field"><label>Settore</label>
+            <select id="dl-settore" onchange="loadAreeFilitroDiserbo()">
+              <option value="">Tutti</option>
+            </select>
+          </div>
+          <div class="field"><label>Area</label><select id="dl-area"><option value="">Tutte</option></select></div>
+          <div class="field"><label>Stato</label>
+            <select id="dl-stato">
+              <option value="">Tutti</option>
+              <option value="true">Completati</option>
+              <option value="false">In corso</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <button class="btn btn-primary amber" onclick="cercaDiserbo()">Cerca</button>
+            <button class="btn btn-secondary" onclick="stampaReport('diserbo')">🖨 Stampa</button>
+          </div>
+        </div>
+        <div class="stats-grid" id="dl-stats"></div>
+        <div class="reg-list" id="diserbo-lista-content">
+          <div class="empty-state"><div class="empty-state-icon">🌾</div><p>Imposta i filtri e clicca Cerca</p></div>
+        </div>
+      </div>
+
+      <!-- ======== ADMIN - OPERATORI ======== -->
+      <div id="page-admin-operatori" class="hidden">
+        <div class="page-header">
+          <div class="module-badge badge-admin">⚙ Amministrazione</div>
+          <div class="page-title">Gestione Operatori</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Operatori registrati</div></div>
+            <button class="btn btn-primary btn-sm" onclick="showModalOperatore()">+ Aggiungi</button>
+          </div>
+          <div id="operatori-list-content">Caricamento...</div>
+        </div>
+      </div>
+
+      <!-- ======== ADMIN - PATRIMONIO ======== -->
+      <div id="page-admin-patrimonio" class="hidden">
+        <div class="page-header">
+          <div class="module-badge badge-admin">⚙ Amministrazione</div>
+          <div class="page-title">Gestione Patrimonio</div>
+          <div class="page-sub">Settori e aree da manutere</div>
+        </div>
+        <div class="admin-grid">
+          <!-- Verde -->
+          <div class="card">
+            <div class="card-header">
+              <div><div class="card-title" style="color:var(--green)">Verde Pubblico</div><div class="card-sub">Settori e aree</div></div>
+              <button class="btn btn-primary btn-sm" onclick="showModalSettore('verde')">+ Settore</button>
+            </div>
+            <div id="verde-settori-list">Caricamento...</div>
+          </div>
+          <!-- Diserbo -->
+          <div class="card">
+            <div class="card-header">
+              <div><div class="card-title" style="color:var(--amber)">Diserbo Superfici</div><div class="card-sub">Settori e aree</div></div>
+              <button class="btn btn-primary btn-sm amber" onclick="showModalSettore('diserbo')">+ Settore</button>
+            </div>
+            <div id="diserbo-settori-list">Caricamento...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== ADMIN - TIPOLOGIE ======== -->
+      <div id="page-admin-tipologie" class="hidden">
+        <div class="page-header">
+          <div class="module-badge badge-admin">⚙ Amministrazione</div>
+          <div class="page-title">Tipologie Lavorazioni</div>
+        </div>
+        <div class="admin-grid">
+          <div class="card">
+            <div class="card-header">
+              <div><div class="card-title" style="color:var(--green)">Verde Pubblico</div></div>
+              <button class="btn btn-primary btn-sm" onclick="showModalTipologia('verde')">+ Aggiungi</button>
+            </div>
+            <div id="verde-tipologie-list">Caricamento...</div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div><div class="card-title" style="color:var(--amber)">Diserbo</div></div>
+              <button class="btn btn-primary btn-sm amber" onclick="showModalTipologia('diserbo')">+ Aggiungi</button>
+            </div>
+            <div id="diserbo-tipologie-list">Caricamento...</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <!-- MOBILE NAV -->
+  <div id="mobile-nav">
+    <button class="mnav-btn active" onclick="showPage('verde-nuova')" id="mnav-verde-nuova"><span class="mnav-icon">🌿</span>Verde</button>
+    <button class="mnav-btn" onclick="showPage('verde-lista')" id="mnav-verde-lista"><span class="mnav-icon">📋</span>Storico</button>
+    <button class="mnav-btn diserbo" onclick="showPage('diserbo-nuova')" id="mnav-diserbo-nuova"><span class="mnav-icon">🌾</span>Diserbo</button>
+    <button class="mnav-btn diserbo" onclick="showPage('diserbo-lista')" id="mnav-diserbo-lista"><span class="mnav-icon">📋</span>Storico</button>
+    <button class="mnav-btn" onclick="showPage('admin-operatori')" id="mnav-admin" style="display:none"><span class="mnav-icon">⚙</span>Admin</button>
+  </div>
+</div><!-- /app -->
+
+<!-- MODAL GENERICO -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Titolo</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- PRINT AREA -->
+<div id="print-area" class="hidden"></div>
+
+<script>
+// ============================================================
+// CONFIGURAZIONE SUPABASE
+// ============================================================
+const SUPABASE_URL = 'https://bhgjfhtpmwolcodppnwu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_gaxO7qDkAibiTK1rJZtaow_bym-BhQH';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================================
+// STATO APPLICAZIONE
+// ============================================================
+let currentUser = null;
+let currentPage = null;
+let appData = {
+  operatori: [],
+  verdeSettori: [], verdeAree: [], verdeTipologie: [],
+  diserboSettori: [], diserboAree: [], diserboTipologie: []
+};
+
+// ============================================================
+// LOGIN / LOGOUT
+// ============================================================
+async function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value.trim();
+  if (!u || !p) { showToast('Inserisci username e password', 'error'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.innerHTML = '<span class="spinner"></span> Accesso...';
+  btn.disabled = true;
+  try {
+    const { data, error } = await sb.from('operatori')
+      .select('*').eq('username', u).eq('password_hash', p).eq('attivo', true).single();
+    if (error || !data) { showToast('Credenziali non valide', 'error'); return; }
+    currentUser = data;
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('topbar-badge').textContent = `${data.nome} ${data.cognome} (${data.ruolo})`;
+    // Mostra sezione admin solo per admin
+    const adminSec = document.getElementById('admin-section');
+    const adminDiv = document.getElementById('admin-divider');
+    if (data.ruolo !== 'admin') {
+      adminSec.classList.add('hidden');
+      adminDiv.classList.add('hidden');
+      document.getElementById('mnav-admin').style.display = 'none';
+    } else {
+      document.getElementById('mnav-admin').style.display = 'flex';
+    }
+    // Disabilita form per consultazione
+    if (data.ruolo === 'consultazione') {
+      document.querySelectorAll('[id^="nav-"][id*="nuova"]').forEach(b => b.classList.add('hidden'));
+      document.querySelectorAll('[id^="mnav-"][id*="nuova"]').forEach(b => b.style.display='none');
+    }
+    await loadAllData();
+    showPage('verde-nuova');
+    showToast(`Benvenuto, ${data.nome}!`, 'success');
+  } catch(e) {
+    showToast('Errore di connessione', 'error');
+    console.error(e);
+  } finally {
+    btn.innerHTML = 'Accedi';
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// ============================================================
+// CARICAMENTO DATI
+// ============================================================
+async function loadAllData() {
+  const [ops, vs, va, vt, ds, da, dt] = await Promise.all([
+    sb.from('operatori').select('*').eq('attivo', true).order('cognome'),
+    sb.from('verde_settori').select('*').eq('attivo', true).order('ordine'),
+    sb.from('verde_aree').select('*').eq('attivo', true).order('nome'),
+    sb.from('verde_tipologie').select('*').eq('attivo', true).order('ordine'),
+    sb.from('diserbo_settori').select('*').eq('attivo', true).order('ordine'),
+    sb.from('diserbo_aree').select('*').eq('attivo', true).order('nome'),
+    sb.from('diserbo_tipologie').select('*').eq('attivo', true).order('ordine'),
+  ]);
+  appData.operatori = ops.data || [];
+  appData.verdeSettori = vs.data || [];
+  appData.verdeAree = va.data || [];
+  appData.verdeTipologie = vt.data || [];
+  appData.diserboSettori = ds.data || [];
+  appData.diserboAree = da.data || [];
+  appData.diserboTipologie = dt.data || [];
+  initForms();
+}
+
+function initForms() {
+  // Verde: settori
+  fillSelect('v-settore', appData.verdeSettori, s => s.nome);
+  fillSelect('vl-settore', appData.verdeSettori, s => s.nome, true);
+  // Diserbo: settori
+  fillSelect('d-settore', appData.diserboSettori, s => s.nome);
+  fillSelect('dl-settore', appData.diserboSettori, s => s.nome, true);
+  // Operatori chip
+  renderOperatoriChip('v-operatori-grid', 'verde');
+  renderOperatoriChip('d-operatori-grid', 'diserbo');
+  // Lavorazioni checklist
+  renderLavorazioniCheck('v-lavorazioni-list', appData.verdeTipologie, 'verde');
+  renderLavorazioniCheck('d-lavorazioni-list', appData.diserboTipologie, 'diserbo');
+  // Admin lists
+  renderOperatoriAdmin();
+  renderPatrimonio();
+  renderTipologie();
+  // Data default oggi
+  const oggi = new Date().toISOString().split('T')[0];
+  ['v-data','d-data'].forEach(id => { const el=document.getElementById(id); if(!el.value) el.value=oggi; });
+}
+
+function fillSelect(id, items, labelFn, withAll=false) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const placeholder = sel.options[0].text;
+  sel.innerHTML = '';
+  if (withAll) sel.add(new Option('Tutti',''));
+  else sel.add(new Option(placeholder,''));
+  items.forEach(i => sel.add(new Option(labelFn(i), i.id)));
+}
+
+function renderOperatoriChip(containerId, tipo) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = '';
+  appData.operatori.forEach(op => {
+    const chip = document.createElement('div');
+    chip.className = 'op-chip';
+    chip.dataset.id = op.id;
+    chip.textContent = `${op.nome} ${op.cognome}`;
+    chip.onclick = function() {
+      this.classList.toggle('selected');
+      if (tipo==='diserbo') this.classList.toggle('diserbo', this.classList.contains('selected'));
+    };
+    // Auto-seleziona l'utente corrente se operatore
+    if (currentUser && currentUser.id === op.id && currentUser.ruolo === 'operatore') {
+      chip.classList.add('selected');
+      if (tipo==='diserbo') chip.classList.add('diserbo');
+    }
+    c.appendChild(chip);
+  });
+}
+
+function renderLavorazioniCheck(containerId, tipologie, tipo) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = '';
+  tipologie.forEach(t => {
+    const item = document.createElement('div');
+    item.className = `check-item ${tipo==='diserbo'?'diserbo-check':''}`;
+    item.dataset.id = t.id;
+    item.dataset.verificaRequired = t.richiede_verifica || false;
+    item.dataset.noteRequired = t.richiede_note || false;
+    item.innerHTML = `
+      <input type="checkbox" id="lav-${tipo}-${t.id}">
+      <div style="flex:1">
+        <div class="check-label">${t.nome}</div>
+        ${t.richiede_verifica ? `<div class="check-extra hidden" id="extra-${tipo}-${t.id}">
+          <label>Esito verifica impianto:</label>
+          <select style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg)">
+            <option value="positiva">✅ Positiva — problema risolto</option>
+            <option value="negativa">⚠️ Negativa — problema rilevato</option>
+          </select>
+        </div>` : ''}
+        ${t.richiede_note ? `<div class="check-extra hidden" id="extra-${tipo}-${t.id}">
+          <label>Note lavorazione:</label>
+          <textarea style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);min-height:50px" placeholder="Descrivi la lavorazione..."></textarea>
+        </div>` : ''}
+      </div>`;
+    const checkbox = item.querySelector('input');
+    checkbox.addEventListener('change', function() {
+      item.classList.toggle('selected', this.checked);
+      const extra = document.getElementById(`extra-${tipo}-${t.id}`);
+      if (extra) extra.classList.toggle('hidden', !this.checked);
+    });
+    c.appendChild(item);
+  });
+}
+
+// ============================================================
+// NAVIGAZIONE
+// ============================================================
+function showPage(page) {
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`page-${page}`)?.classList.remove('hidden');
+  document.getElementById(`nav-${page}`)?.classList.add('active');
+  document.getElementById(`mnav-${page}`)?.classList.add('active');
+  currentPage = page;
+  // Carica dati pagine lista
+  if (page === 'admin-operatori') renderOperatoriAdmin();
+  if (page === 'admin-patrimonio') renderPatrimonio();
+  if (page === 'admin-tipologie') renderTipologie();
+}
+
+// ============================================================
+// AREE - CASCADE
+// ============================================================
+function loadAreeVerde() {
+  const sId = document.getElementById('v-settore').value;
+  const aree = appData.verdeAree.filter(a => a.settore_id === sId);
+  fillSelect('v-area', aree, a => `${a.nome}${a.superficie_mq?' ('+a.superficie_mq+' mq)':''}`);
+}
+function loadAreeDiserbo() {
+  const sId = document.getElementById('d-settore').value;
+  const aree = appData.diserboAree.filter(a => a.settore_id === sId);
+  fillSelect('d-area', aree, a => `${a.nome}${a.superficie_mq?' ('+a.superficie_mq+' mq)':''}`);
+}
+function loadAreeFiltroVerde() {
+  const sId = document.getElementById('vl-settore').value;
+  const sel = document.getElementById('vl-area');
+  sel.innerHTML = '<option value="">Tutte</option>';
+  if (sId) appData.verdeAree.filter(a=>a.settore_id===sId).forEach(a => sel.add(new Option(a.nome, a.id)));
+}
+function loadAreeFilitroDiserbo() {
+  const sId = document.getElementById('dl-settore').value;
+  const sel = document.getElementById('dl-area');
+  sel.innerHTML = '<option value="">Tutte</option>';
+  if (sId) appData.diserboAree.filter(a=>a.settore_id===sId).forEach(a => sel.add(new Option(a.nome, a.id)));
+}
+
+// ============================================================
+// SALVA REGISTRAZIONE VERDE
+// ============================================================
+async function salvaRegistrazioneVerde() {
+  if (currentUser.ruolo === 'consultazione') { showToast('Non hai i permessi per registrare', 'error'); return; }
+  const data = document.getElementById('v-data').value;
+  const ore = parseFloat(document.getElementById('v-ore').value);
+  const settore = document.getElementById('v-settore').value;
+  const area = document.getElementById('v-area').value;
+  const completato = document.getElementById('v-completato').value === 'true';
+  const note = document.getElementById('v-note').value;
+  // Operatori
+  const opIds = [...document.querySelectorAll('#v-operatori-grid .op-chip.selected')].map(c => c.dataset.id);
+  // Lavorazioni
+  const lavorazioni = [];
+  document.querySelectorAll('#v-lavorazioni-list .check-item').forEach(item => {
+    const cb = item.querySelector('input[type=checkbox]');
+    if (cb && cb.checked) {
+      const tid = item.dataset.id;
+      const extra = document.getElementById(`extra-verde-${tid}`);
+      let verifica = null, noteL = null;
+      if (extra && !extra.classList.contains('hidden')) {
+        const sel = extra.querySelector('select');
+        const ta = extra.querySelector('textarea');
+        if (sel) verifica = sel.value === 'positiva';
+        if (ta) noteL = ta.value;
+      }
+      lavorazioni.push({ tipologia_id: tid, verifica_positiva: verifica, note_lavorazione: noteL });
+    }
+  });
+  if (!data || !area || isNaN(ore) || opIds.length===0 || lavorazioni.length===0) {
+    showToast('Compila tutti i campi obbligatori', 'error'); return;
+  }
+  const btn = document.getElementById('btn-salva-verde');
+  btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true;
+  try {
+    const { data: reg, error } = await sb.from('verde_registrazioni').insert({
+      data_intervento: data, settore_id: settore, area_id: area,
+      ore_lavorate: ore, completato, note, creato_da: currentUser.id
+    }).select().single();
+    if (error) throw error;
+    // Lavorazioni
+    await sb.from('verde_lavorazioni').insert(lavorazioni.map(l => ({ registrazione_id: reg.id, ...l })));
+    // Operatori
+    await sb.from('verde_operatori_coinvolti').insert(opIds.map(oid => ({ registrazione_id: reg.id, operatore_id: oid })));
+    showToast('Registrazione salvata!', 'success');
+    resetFormVerde();
+  } catch(e) { showToast('Errore nel salvataggio', 'error'); console.error(e); }
+  finally { btn.innerHTML = 'Salva registrazione'; btn.disabled = false; }
+}
+
+function resetFormVerde() {
+  const oggi = new Date().toISOString().split('T')[0];
+  document.getElementById('v-data').value = oggi;
+  document.getElementById('v-ore').value = '';
+  document.getElementById('v-settore').value = '';
+  document.getElementById('v-area').innerHTML = '<option value="">— Seleziona prima il settore —</option>';
+  document.getElementById('v-completato').value = 'false';
+  document.getElementById('v-note').value = '';
+  renderOperatoriChip('v-operatori-grid', 'verde');
+  renderLavorazioniCheck('v-lavorazioni-list', appData.verdeTipologie, 'verde');
+}
+
+// ============================================================
+// SALVA REGISTRAZIONE DISERBO
+// ============================================================
+async function salvaRegistrazioneDiserbo() {
+  if (currentUser.ruolo === 'consultazione') { showToast('Non hai i permessi per registrare', 'error'); return; }
+  const data = document.getElementById('d-data').value;
+  const ore = parseFloat(document.getElementById('d-ore').value);
+  const settore = document.getElementById('d-settore').value;
+  const area = document.getElementById('d-area').value;
+  const completato = document.getElementById('d-completato').value === 'true';
+  const note = document.getElementById('d-note').value;
+  const opIds = [...document.querySelectorAll('#d-operatori-grid .op-chip.selected')].map(c => c.dataset.id);
+  const lavorazioni = [];
+  document.querySelectorAll('#d-lavorazioni-list .check-item').forEach(item => {
+    const cb = item.querySelector('input[type=checkbox]');
+    if (cb && cb.checked) lavorazioni.push({ tipologia_id: item.dataset.id });
+  });
+  if (!data || !area || isNaN(ore) || opIds.length===0 || lavorazioni.length===0) {
+    showToast('Compila tutti i campi obbligatori', 'error'); return;
+  }
+  const btn = document.getElementById('btn-salva-diserbo');
+  btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true;
+  try {
+    const { data: reg, error } = await sb.from('diserbo_registrazioni').insert({
+      data_intervento: data, settore_id: settore, area_id: area,
+      ore_lavorate: ore, completato, note, creato_da: currentUser.id
+    }).select().single();
+    if (error) throw error;
+    await sb.from('diserbo_lavorazioni').insert(lavorazioni.map(l => ({ registrazione_id: reg.id, ...l })));
+    await sb.from('diserbo_operatori_coinvolti').insert(opIds.map(oid => ({ registrazione_id: reg.id, operatore_id: oid })));
+    showToast('Registrazione salvata!', 'success');
+    resetFormDiserbo();
+  } catch(e) { showToast('Errore nel salvataggio', 'error'); console.error(e); }
+  finally { btn.innerHTML = 'Salva registrazione'; btn.disabled = false; }
+}
+
+function resetFormDiserbo() {
+  const oggi = new Date().toISOString().split('T')[0];
+  document.getElementById('d-data').value = oggi;
+  document.getElementById('d-ore').value = '';
+  document.getElementById('d-settore').value = '';
+  document.getElementById('d-area').innerHTML = '<option value="">— Seleziona prima il settore —</option>';
+  document.getElementById('d-completato').value = 'false';
+  document.getElementById('d-note').value = '';
+  renderOperatoriChip('d-operatori-grid', 'diserbo');
+  renderLavorazioniCheck('d-lavorazioni-list', appData.diserboTipologie, 'diserbo');
+}
+
+// ============================================================
+// CERCA REGISTRAZIONI VERDE
+// ============================================================
+async function cercaVerde() {
+  const dal = document.getElementById('vl-dal').value;
+  const al = document.getElementById('vl-al').value;
+  const settore = document.getElementById('vl-settore').value;
+  const area = document.getElementById('vl-area').value;
+  const stato = document.getElementById('vl-stato').value;
+  let q = sb.from('verde_registrazioni').select(`
+    *, settore:verde_settori(nome), area:verde_aree(nome,superficie_mq),
+    verde_operatori_coinvolti(operatori(nome,cognome)),
+    verde_lavorazioni(verde_tipologie(nome))
+  `).order('data_intervento', {ascending:false});
+  if (dal) q = q.gte('data_intervento', dal);
+  if (al) q = q.lte('data_intervento', al);
+  if (settore) q = q.eq('settore_id', settore);
+  if (area) q = q.eq('area_id', area);
+  if (stato !== '') q = q.eq('completato', stato === 'true');
+  const { data, error } = await q;
+  if (error) { showToast('Errore nella ricerca','error'); return; }
+  renderRegistrazioniList('verde-lista-content', data || [], 'verde');
+  renderStats('vl-stats', data || [], 'verde');
+}
+
+async function cercaDiserbo() {
+  const dal = document.getElementById('dl-dal').value;
+  const al = document.getElementById('dl-al').value;
+  const settore = document.getElementById('dl-settore').value;
+  const area = document.getElementById('dl-area').value;
+  const stato = document.getElementById('dl-stato').value;
+  let q = sb.from('diserbo_registrazioni').select(`
+    *, settore:diserbo_settori(nome), area:diserbo_aree(nome,superficie_mq),
+    diserbo_operatori_coinvolti(operatori(nome,cognome)),
+    diserbo_lavorazioni(diserbo_tipologie(nome))
+  `).order('data_intervento', {ascending:false});
+  if (dal) q = q.gte('data_intervento', dal);
+  if (al) q = q.lte('data_intervento', al);
+  if (settore) q = q.eq('settore_id', settore);
+  if (area) q = q.eq('area_id', area);
+  if (stato !== '') q = q.eq('completato', stato === 'true');
+  const { data, error } = await q;
+  if (error) { showToast('Errore nella ricerca','error'); return; }
+  renderRegistrazioniList('diserbo-lista-content', data || [], 'diserbo');
+  renderStats('dl-stats', data || [], 'diserbo');
+}
+
+function renderStats(containerId, items, tipo) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  const totOre = items.reduce((s,r) => s + parseFloat(r.ore_lavorate||0), 0);
+  const completati = items.filter(r => r.completato).length;
+  const colore = tipo==='verde' ? 'stat-verde' : 'stat-diserbo';
+  c.innerHTML = `
+    <div class="stat-card ${colore}"><div class="stat-num">${items.length}</div><div class="stat-label">Registrazioni trovate</div></div>
+    <div class="stat-card ${colore}"><div class="stat-num">${totOre.toFixed(1)}</div><div class="stat-label">Ore totali lavorate</div></div>
+    <div class="stat-card"><div class="stat-num">${completati}</div><div class="stat-label">Completate</div></div>
+    <div class="stat-card"><div class="stat-num">${items.length - completati}</div><div class="stat-label">In corso</div></div>
+  `;
+}
+
+function renderRegistrazioniList(containerId, items, tipo) {
+  const c = document.getElementById(containerId);
+  if (!items.length) { c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>Nessuna registrazione trovata con i filtri applicati</p></div>'; return; }
+  const lavorKey = tipo==='verde' ? 'verde_lavorazioni' : 'diserbo_lavorazioni';
+  const opKey = tipo==='verde' ? 'verde_operatori_coinvolti' : 'diserbo_operatori_coinvolti';
+  const tipKey = tipo==='verde' ? 'verde_tipologie' : 'diserbo_tipologie';
+  c.innerHTML = items.map(r => {
+    const ops = (r[opKey]||[]).map(o => `${o.operatori?.nome||''} ${o.operatori?.cognome||''}`).join(', ');
+    const lavs = (r[lavorKey]||[]).map(l => `<span class="tag ${tipo==='verde'?'tag-green':'tag-amber'}">${l[tipKey]?.nome||'?'}</span>`).join('');
+    const dateFmt = r.data_intervento ? new Date(r.data_intervento+'T12:00:00').toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+    return `<div class="reg-card ${tipo}" onclick="apriDettaglio('${r.id}','${tipo}')">
+      <div class="reg-card-top">
+        <div>
+          <div class="reg-card-date">${dateFmt}</div>
+          <div class="reg-card-area">${r.area?.nome||'Area non trovata'}</div>
+          <div class="reg-card-settore">${r.settore?.nome||''}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="tag ${r.completato?'tag-ok':'tag-pending'}">${r.completato?'✓ Completato':'⏳ In corso'}</span>
+          <div style="font-size:0.78rem;color:var(--text3);margin-top:4px">${r.ore_lavorate} ore</div>
+        </div>
+      </div>
+      <div class="reg-card-bottom">
+        <span class="tag tag-gray">👷 ${ops||'N/D'}</span>
+        ${lavs}
+        ${r.area?.superficie_mq ? `<span class="tag tag-blue">${r.area.superficie_mq} mq</span>` : ''}
+      </div>
+      ${r.note ? `<div style="margin-top:8px;font-size:0.8rem;color:var(--text3);font-style:italic">📝 ${r.note}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// DETTAGLIO REGISTRAZIONE
+// ============================================================
+async function apriDettaglio(id, tipo) {
+  const lavorKey = tipo==='verde' ? 'verde_lavorazioni' : 'diserbo_lavorazioni';
+  const opKey = tipo==='verde' ? 'verde_operatori_coinvolti' : 'diserbo_operatori_coinvolti';
+  const tipKey = tipo==='verde' ? 'verde_tipologie' : 'diserbo_tipologie';
+  const table = tipo==='verde' ? 'verde_registrazioni' : 'diserbo_registrazioni';
+  const { data: r } = await sb.from(table).select(`
+    *, settore:${tipo}_settori(nome), area:${tipo}_aree(nome,superficie_mq),
+    ${opKey}(operatori(nome,cognome)), ${lavorKey}(${tipKey}(nome), verifica_positiva, note_lavorazione)
+  `).eq('id', id).single();
+  if (!r) { showToast('Errore caricamento', 'error'); return; }
+  const dateFmt = new Date(r.data_intervento+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  const ops = (r[opKey]||[]).map(o => `${o.operatori?.nome||''} ${o.operatori?.cognome||''}`).join(', ');
+  const lavs = (r[lavorKey]||[]).map(l => {
+    let extra = '';
+    if (l.verifica_positiva !== null && l.verifica_positiva !== undefined)
+      extra = `<div style="font-size:0.78rem;color:${l.verifica_positiva?'var(--green)':'var(--amber)'};margin-top:2px">${l.verifica_positiva?'✅ Verifica positiva':'⚠️ Verifica negativa'}</div>`;
+    if (l.note_lavorazione) extra = `<div style="font-size:0.78rem;color:var(--text3);margin-top:2px">📝 ${l.note_lavorazione}</div>`;
+    return `<div style="padding:6px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);margin-bottom:4px"><div style="font-size:0.88rem">${l[tipKey]?.nome||'?'}</div>${extra}</div>`;
+  }).join('');
+
+  const canEdit = currentUser.ruolo === 'admin';
+  openModal(`Dettaglio intervento`, `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><div class="section-title">Data</div>${dateFmt}</div>
+      <div><div class="section-title">Ore lavorate</div>${r.ore_lavorate} ore</div>
+      <div><div class="section-title">Settore</div>${r.settore?.nome||'—'}</div>
+      <div><div class="section-title">Area</div>${r.area?.nome||'—'} ${r.area?.superficie_mq?'('+r.area.superficie_mq+' mq)':''}</div>
+    </div>
+    <div style="margin-bottom:12px"><div class="section-title">Operatori coinvolti</div>${ops||'—'}</div>
+    <div style="margin-bottom:12px"><div class="section-title">Stato</div><span class="tag ${r.completato?'tag-ok':'tag-pending'}">${r.completato?'✓ Completato':'⏳ In corso'}</span></div>
+    <div style="margin-bottom:12px"><div class="section-title">Lavorazioni eseguite</div>${lavs||'—'}</div>
+    ${r.note ? `<div><div class="section-title">Note</div><div style="font-size:0.88rem;color:var(--text2)">${r.note}</div></div>` : ''}
+  `, canEdit ? [
+    { label: 'Elimina', cls: 'btn-danger', action: `eliminaReg('${id}','${tipo}')` },
+    { label: 'Chiudi', cls: 'btn-secondary', action: 'closeModal()' }
+  ] : [{ label: 'Chiudi', cls: 'btn-secondary', action: 'closeModal()' }]);
+}
+
+async function eliminaReg(id, tipo) {
+  if (!confirm('Eliminare questa registrazione? L\'operazione è irreversibile.')) return;
+  const table = tipo==='verde' ? 'verde_registrazioni' : 'diserbo_registrazioni';
+  const { error } = await sb.from(table).delete().eq('id', id);
+  if (error) { showToast('Errore eliminazione', 'error'); return; }
+  closeModal();
+  showToast('Registrazione eliminata', 'success');
+  if (tipo==='verde') cercaVerde(); else cercaDiserbo();
+}
+
+// ============================================================
+// STAMPA REPORT
+// ============================================================
+function stampaReport(tipo) {
+  const contenutoPagina = document.getElementById(`${tipo==='verde'?'verde':'diserbo'}-lista-content`).innerHTML;
+  const stats = document.getElementById(`${tipo==='verde'?'vl':'dl'}-stats`).innerHTML;
+  const oggi = new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
+
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8">
+  <title>SO.MI.CA. — Report ${tipo==='verde'?'Verde Pubblico':'Diserbo'}</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #111; margin: 20mm; }
+    .intestata { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 2px solid #2d6a4f; padding-bottom: 12px; margin-bottom: 16px; }
+    .logo-area h1 { font-size: 16px; color: #2d6a4f; margin: 0 0 2px; }
+    .logo-area p { font-size: 10px; color: #666; margin: 0; }
+    .report-info { text-align: right; font-size: 10px; color: #666; }
+    .report-info h2 { font-size: 13px; color: #111; margin: 0 0 4px; }
+    .stats { display: flex; gap: 12px; margin: 12px 0; }
+    .stat { flex: 1; border: 1px solid #ddd; padding: 8px; border-radius: 6px; text-align: center; }
+    .stat-n { font-size: 20px; font-weight: bold; color: #2d6a4f; }
+    .stat-l { font-size: 10px; color: #666; }
+    .reg { border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px; padding: 10px; page-break-inside: avoid; }
+    .reg-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .reg-date { font-size: 11px; color: #666; }
+    .reg-area { font-weight: bold; }
+    .tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; background: #e8f5ee; color: #2d6a4f; margin: 2px; }
+    .footer { margin-top: 24px; border-top: 1px solid #ddd; padding-top: 8px; font-size: 10px; color: #888; display: flex; justify-content: space-between; }
+    @page { margin: 15mm; }
+  </style></head><body>
+  <div class="intestata">
+    <div class="logo-area">
+      <img src="data:image/png;base64,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" alt="SO.MI.CA." style="height:52px"><h1 style="font-size:15px;color:#2d6a4f;margin:6px 0 2px">SO.MI.CA. S.p.A.</h1>
+      <p>Società Mista Carbonia — Comune di Carbonia</p>
+      <p>P.I. 02745530929 — Via Lubiana 348, 09013 Carbonia (SU)</p>
+      <p>Tel. 0781 665070 — somica_spa@somica.it</p>
+    </div>
+    <div class="report-info">
+      <h2>Report ${tipo==='verde'?'Verde Pubblico Attrezzato':'Diserbo Superfici Non Pavimentate'}</h2>
+      <p>Data stampa: ${oggi}</p>
+      <p>Estratto da: Sistema Gestione Interventi SO.MI.CA.</p>
+    </div>
+  </div>
+  <div class="stats">${stats.replace(/class="stat-card[^"]*"/g,'class="stat"').replace(/class="stat-num[^"]*"/g,'class="stat-n"').replace(/class="stat-label"/g,'class="stat-l"')}</div>
+  <div>${contenutoPagina}</div>
+  <div class="footer">
+    <span>SO.MI.CA. S.p.A. — Documento generato automaticamente dal sistema di gestione interventi</span>
+    <span>Pag. 1</span>
+  </div>
+  <script>window.onload=()=>{ window.print(); }<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// ============================================================
+// ADMIN - OPERATORI
+// ============================================================
+async function renderOperatoriAdmin() {
+  const c = document.getElementById('operatori-list-content');
+  if (!c) return;
+  const { data } = await sb.from('operatori').select('*').order('cognome');
+  if (!data?.length) { c.innerHTML = '<p class="txt-muted">Nessun operatore</p>'; return; }
+  const ruoloBadge = r => r==='admin'?'tag-blue':r==='consultazione'?'tag-amber':'tag-green';
+  c.innerHTML = data.map(op => `
+    <div class="list-item">
+      <div>
+        <div class="list-item-name">${op.nome} ${op.cognome}</div>
+        <div class="list-item-sub">${op.username} · <span class="tag ${ruoloBadge(op.ruolo)}">${op.ruolo}</span> ${!op.attivo?'· <span style="color:var(--text3)">disattivo</span>':''}</div>
+      </div>
+      <div class="list-actions">
+        <button class="btn btn-secondary btn-sm" onclick="toggleOperatore('${op.id}',${op.attivo})">${op.attivo?'Disattiva':'Attiva'}</button>
+        <button class="btn btn-secondary btn-sm" onclick="showModalOperatore('${op.id}')">Modifica</button>
+      </div>
+    </div>`).join('');
+}
+
+function showModalOperatore(id=null) {
+  const op = id ? appData.operatori.find(o=>o.id===id) : null;
+  openModal(op ? 'Modifica operatore' : 'Nuovo operatore', `
+    <div class="gap-12">
+      <div class="form-row">
+        <div class="field"><label>Nome *</label><input type="text" id="op-nome" value="${op?.nome||''}" placeholder="Nome"></div>
+        <div class="field"><label>Cognome *</label><input type="text" id="op-cognome" value="${op?.cognome||''}" placeholder="Cognome"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Username *</label><input type="text" id="op-user" value="${op?.username||''}" placeholder="nome.cognome"></div>
+        <div class="field"><label>Password *</label><input type="text" id="op-pass" value="${op?.password_hash||''}" placeholder="Password"></div>
+      </div>
+      <div class="field"><label>Ruolo *</label>
+        <select id="op-ruolo">
+          <option value="operatore" ${(!op||op?.ruolo==='operatore')?'selected':''}>Operatore</option>
+          <option value="consultazione" ${op?.ruolo==='consultazione'?'selected':''}>Consultazione</option>
+          <option value="admin" ${op?.ruolo==='admin'?'selected':''}>Admin</option>
+        </select>
+      </div>
+    </div>`,
+    [{ label: 'Annulla', cls:'btn-secondary', action:'closeModal()' },
+     { label: op?'Salva modifiche':'Aggiungi', cls:'btn-primary', action:`salvaOperatore('${id||''}')` }]
+  );
+}
+
+async function salvaOperatore(id) {
+  const nome = document.getElementById('op-nome').value.trim();
+  const cognome = document.getElementById('op-cognome').value.trim();
+  const username = document.getElementById('op-user').value.trim();
+  const pass = document.getElementById('op-pass').value.trim();
+  const ruolo = document.getElementById('op-ruolo').value;
+  if (!nome||!cognome||!username||!pass) { showToast('Compila tutti i campi','error'); return; }
+  const payload = { nome, cognome, username, password_hash: pass, ruolo };
+  let error;
+  if (id) { ({ error } = await sb.from('operatori').update(payload).eq('id', id)); }
+  else { ({ error } = await sb.from('operatori').insert(payload)); }
+  if (error) { showToast('Errore: '+(error.message||'username duplicato'),'error'); return; }
+  closeModal();
+  showToast('Operatore salvato!','success');
+  await loadAllData();
+  renderOperatoriAdmin();
+}
+
+async function toggleOperatore(id, attivo) {
+  await sb.from('operatori').update({ attivo: !attivo }).eq('id', id);
+  await loadAllData();
+  renderOperatoriAdmin();
+}
+
+// ============================================================
+// ADMIN - PATRIMONIO
+// ============================================================
+async function renderPatrimonio() {
+  await renderSettoriLista('verde');
+  await renderSettoriLista('diserbo');
+}
+
+async function renderSettoriLista(tipo) {
+  const c = document.getElementById(`${tipo}-settori-list`);
+  if (!c) return;
+  const settori = tipo==='verde' ? appData.verdeSettori : appData.diserboSettori;
+  const aree = tipo==='verde' ? appData.verdeAree : appData.diserboAree;
+  if (!settori.length) { c.innerHTML = '<p class="txt-muted" style="margin-top:8px">Nessun settore</p>'; return; }
+  c.innerHTML = settori.map(s => {
+    const areeS = aree.filter(a=>a.settore_id===s.id);
+    return `
+    <div style="margin-bottom:12px">
+      <div class="list-item">
+        <div><div class="list-item-name">${s.nome}</div><div class="list-item-sub">${areeS.length} aree</div></div>
+        <div class="list-actions">
+          <button class="btn btn-secondary btn-sm" onclick="showModalArea('${tipo}','${s.id}')">+ Area</button>
+          <button class="btn btn-secondary btn-sm" onclick="showModalSettore('${tipo}','${s.id}')">✎</button>
+        </div>
+      </div>
+      <div style="padding-left:12px;margin-top:4px">
+        ${areeS.map(a => `
+          <div class="list-item" style="background:var(--bg2)">
+            <div><div style="font-size:0.85rem">${a.nome}</div><div class="list-item-sub">${a.tipo||'area'} ${a.superficie_mq?'— '+a.superficie_mq+' mq':''}</div></div>
+            <button class="btn btn-secondary btn-sm" onclick="showModalArea('${tipo}','${s.id}','${a.id}')">✎</button>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showModalSettore(tipo, id=null) {
+  const settori = tipo==='verde' ? appData.verdeSettori : appData.diserboSettori;
+  const s = id ? settori.find(x=>x.id===id) : null;
+  openModal(s?'Modifica settore':'Nuovo settore', `
+    <div class="gap-12">
+      <div class="field"><label>Nome settore *</label><input type="text" id="s-nome" value="${s?.nome||''}" placeholder="es. Settore 2 - Zona Ovest"></div>
+      <div class="field"><label>Descrizione</label><textarea id="s-desc" placeholder="Descrizione opzionale...">${s?.descrizione||''}</textarea></div>
+    </div>`,
+    [{ label:'Annulla', cls:'btn-secondary', action:'closeModal()' },
+     { label: s?'Salva':'Aggiungi', cls:'btn-primary', action:`salvaSettore('${tipo}','${id||''}')` }]
+  );
+}
+
+async function salvaSettore(tipo, id) {
+  const nome = document.getElementById('s-nome').value.trim();
+  const desc = document.getElementById('s-desc').value.trim();
+  if (!nome) { showToast('Inserisci il nome','error'); return; }
+  const table = `${tipo}_settori`;
+  let error;
+  if (id) { ({error}=await sb.from(table).update({nome,descrizione:desc}).eq('id',id)); }
+  else { ({error}=await sb.from(table).insert({nome,descrizione:desc})); }
+  if (error) { showToast('Errore salvataggio','error'); return; }
+  closeModal(); showToast('Settore salvato!','success');
+  await loadAllData(); renderPatrimonio();
+}
+
+function showModalArea(tipo, settoreId, areaId=null) {
+  const aree = tipo==='verde' ? appData.verdeAree : appData.diserboAree;
+  const a = areaId ? aree.find(x=>x.id===areaId) : null;
+  openModal(a?'Modifica area':'Nuova area', `
+    <div class="gap-12">
+      <div class="field"><label>Nome area / via *</label><input type="text" id="a-nome" value="${a?.nome||''}" placeholder="es. Via Verona, Piazza Marmilla..."></div>
+      <div class="form-row">
+        <div class="field"><label>Tipo</label>
+          <select id="a-tipo">
+            ${['via','piazza','area verde','area pertinenziale','strada rurale','area parcheggio','altro']
+              .map(t=>`<option value="${t}" ${a?.tipo===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Superficie (mq)</label><input type="number" id="a-mq" value="${a?.superficie_mq||''}" placeholder="es. 1200"></div>
+      </div>
+    </div>`,
+    [{ label:'Annulla', cls:'btn-secondary', action:'closeModal()' },
+     { label: a?'Salva':'Aggiungi', cls:'btn-primary', action:`salvaArea('${tipo}','${settoreId}','${areaId||''}')` }]
+  );
+}
+
+async function salvaArea(tipo, settoreId, areaId) {
+  const nome = document.getElementById('a-nome').value.trim();
+  const t = document.getElementById('a-tipo').value;
+  const mq = parseFloat(document.getElementById('a-mq').value)||null;
+  if (!nome) { showToast('Inserisci il nome','error'); return; }
+  const table = `${tipo}_aree`;
+  let error;
+  const payload = { nome, tipo: t, superficie_mq: mq, settore_id: settoreId };
+  if (areaId) { ({error}=await sb.from(table).update(payload).eq('id',areaId)); }
+  else { ({error}=await sb.from(table).insert(payload)); }
+  if (error) { showToast('Errore salvataggio','error'); return; }
+  closeModal(); showToast('Area salvata!','success');
+  await loadAllData(); renderPatrimonio();
+}
+
+// ============================================================
+// ADMIN - TIPOLOGIE
+// ============================================================
+async function renderTipologie() {
+  renderTipologiaLista('verde');
+  renderTipologiaLista('diserbo');
+}
+function renderTipologiaLista(tipo) {
+  const c = document.getElementById(`${tipo}-tipologie-list`);
+  if (!c) return;
+  const tipologie = tipo==='verde' ? appData.verdeTipologie : appData.diserboTipologie;
+  if (!tipologie.length) { c.innerHTML = '<p class="txt-muted" style="margin-top:8px">Nessuna tipologia</p>'; return; }
+  c.innerHTML = tipologie.map(t => `
+    <div class="list-item">
+      <div><div style="font-size:0.85rem">${t.nome}</div>
+        ${t.richiede_verifica?'<span class="tag tag-blue" style="font-size:0.72rem">verifica</span>':''}
+        ${t.richiede_note?'<span class="tag tag-amber" style="font-size:0.72rem">note</span>':''}
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="showModalTipologia('${tipo}','${t.id}')">✎</button>
+    </div>`).join('');
+}
+
+function showModalTipologia(tipo, id=null) {
+  const tipologie = tipo==='verde' ? appData.verdeTipologie : appData.diserboTipologie;
+  const t = id ? tipologie.find(x=>x.id===id) : null;
+  openModal(t?'Modifica tipologia':'Nuova tipologia', `
+    <div class="gap-12">
+      <div class="field"><label>Nome lavorazione *</label><textarea id="t-nome" style="min-height:60px">${t?.nome||''}</textarea></div>
+      ${tipo==='verde'?`
+      <div style="display:flex;gap:16px">
+        <label style="display:flex;gap:8px;align-items:center;cursor:pointer;font-size:0.88rem">
+          <input type="checkbox" id="t-verifica" ${t?.richiede_verifica?'checked':''}> Richiede verifica (irrigazione)
+        </label>
+        <label style="display:flex;gap:8px;align-items:center;cursor:pointer;font-size:0.88rem">
+          <input type="checkbox" id="t-note" ${t?.richiede_note?'checked':''}> Richiede note aggiuntive
+        </label>
+      </div>` : '<div id="t-verifica-wrap"></div>'}
+    </div>`,
+    [{ label:'Annulla', cls:'btn-secondary', action:'closeModal()' },
+     { label: t?'Salva':'Aggiungi', cls:'btn-primary', action:`salvaTipologia('${tipo}','${id||''}')` }]
+  );
+}
+
+async function salvaTipologia(tipo, id) {
+  const nome = document.getElementById('t-nome').value.trim();
+  if (!nome) { showToast('Inserisci il nome','error'); return; }
+  const table = `${tipo}_tipologie`;
+  const verifica = document.getElementById('t-verifica')?.checked||false;
+  const note = document.getElementById('t-note')?.checked||false;
+  const payload = { nome, richiede_verifica: verifica, richiede_note: note };
+  let error;
+  if (id) { ({error}=await sb.from(table).update(payload).eq('id',id)); }
+  else { ({error}=await sb.from(table).insert(payload)); }
+  if (error) { showToast('Errore salvataggio','error'); return; }
+  closeModal(); showToast('Tipologia salvata!','success');
+  await loadAllData(); renderTipologie();
+  renderLavorazioniCheck('v-lavorazioni-list', appData.verdeTipologie, 'verde');
+  renderLavorazioniCheck('d-lavorazioni-list', appData.diserboTipologie, 'diserbo');
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(title, body, buttons=[]) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-footer').innerHTML = buttons.map(b =>
+    `<button class="btn ${b.cls}" onclick="${b.action}">${b.label}</button>`).join('');
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+document.getElementById('modal-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+// Inizializza i dati del patrimonio di prova dopo la creazione
+async function seedDemoData() {
+  // Controlla se ci sono già aree verde
+  const { data: check } = await sb.from('verde_aree').select('id').limit(1);
+  if (check?.length) return; // Già popolato
+  // Trova il settore verde
+  const { data: vs } = await sb.from('verde_settori').select('id').limit(1);
+  if (vs?.length) {
+    await sb.from('verde_aree').insert([
+      { settore_id: vs[0].id, nome: 'Piazza Marmilla', tipo: 'piazza', superficie_mq: 1000 },
+      { settore_id: vs[0].id, nome: 'Piazza Minatore', tipo: 'piazza', superficie_mq: 500 }
+    ]);
+  }
+  // Trova il settore diserbo
+  const { data: ds } = await sb.from('diserbo_settori').select('id').limit(1);
+  if (ds?.length) {
+    await sb.from('diserbo_aree').insert([
+      { settore_id: ds[0].id, nome: 'Via Verona', tipo: 'via', superficie_mq: 1000 },
+      { settore_id: ds[0].id, nome: 'Via Deledda', tipo: 'via', superficie_mq: 500 }
+    ]);
+  }
+}
+
+// Avvia seed demo al caricamento
+document.addEventListener('DOMContentLoaded', () => seedDemoData());
+</script>
+</body>
+</html>
