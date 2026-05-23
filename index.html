@@ -290,7 +290,7 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
               <div class="section-title">Stato lavorazione *</div>
               <div class="flag-box" id="v-flag-completato" onclick="toggleFlag('v-flag-completato','verde')">
                 <div class="flag-checkbox" id="v-flag-icon"></div>
-                <div class="flag-label" id="v-flag-label">Spunta per confermare il completamento dell'intervento</div>
+                <div class="flag-label" id="v-flag-label">Spunta per confermare il completamento dell\'intervento</div>
               </div>
             </div>
             <div class="field"><label>Note giornaliere</label><textarea id="v-note" placeholder="Annotazioni, segnalazioni..."></textarea></div>
@@ -356,7 +356,7 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
               <div class="section-title">Stato lavorazione *</div>
               <div class="flag-box diserbo" id="d-flag-completato" onclick="toggleFlag('d-flag-completato','diserbo')">
                 <div class="flag-checkbox" id="d-flag-icon"></div>
-                <div class="flag-label" id="d-flag-label">Spunta per confermare il completamento dell'intervento</div>
+                <div class="flag-label" id="d-flag-label">Spunta per confermare il completamento dell\'intervento</div>
               </div>
             </div>
             <div class="field"><label>Note giornaliere</label><textarea id="d-note" placeholder="Annotazioni..."></textarea></div>
@@ -769,7 +769,7 @@ function toggleFlag(flagId, tipo) {
   } else {
     box.classList.remove('checked');
     icon.textContent = '';
-    label.textContent = 'Spunta per confermare il completamento dell'intervento';
+    label.textContent = 'Spunta per confermare il completamento dell\'intervento';
   }
 }
 
@@ -801,7 +801,7 @@ async function salvaRegistrazioneVerde() {
   if(opIds.length===0) { showToast('Seleziona almeno un operatore','error'); return; }
   if(lavorazioni.length===0) { showToast('Seleziona almeno una lavorazione','error'); return; }
   if(!flagStato.verde) { showToast('Indica lo stato della lavorazione (flag obbligatorio)','error'); return; }
-  // Trova settore dell'area
+  // Trova settore dell\'area
   const areaObj = appData.verdeAree.find(a=>a.id===areaId);
   const settoreId = areaObj?.settore_id || null;
   const btn = document.getElementById('btn-salva-verde');
@@ -831,7 +831,7 @@ function resetFormVerde() {
   const box=document.getElementById('v-flag-completato');
   box.classList.remove('checked');
   document.getElementById('v-flag-icon').textContent='';
-  document.getElementById('v-flag-label').textContent='Spunta per confermare il completamento dell'intervento';
+  document.getElementById('v-flag-label').textContent='Spunta per confermare il completamento dell\'intervento';
   renderOperatoriChip('v-operatori-grid','verde');
   renderLavorazioniCheck('v-lavorazioni-list',appData.verdeTipologie,'verde');
 }
@@ -883,7 +883,7 @@ function resetFormDiserbo() {
   const box=document.getElementById('d-flag-completato');
   box.classList.remove('checked');
   document.getElementById('d-flag-icon').textContent='';
-  document.getElementById('d-flag-label').textContent='Spunta per confermare il completamento dell'intervento';
+  document.getElementById('d-flag-label').textContent='Spunta per confermare il completamento dell\'intervento';
   renderOperatoriChip('d-operatori-grid','diserbo');
   renderLavorazioniCheck('d-lavorazioni-list',appData.diserboTipologie,'diserbo');
 }
@@ -1156,7 +1156,7 @@ async function salvaOperatore(id) {
 }
 
 async function eliminaOperatore(id, nome) {
-  if(!confirm(`Eliminare l'operatore "${nome}"? Questa azione è irreversibile.`)) return;
+  if(!confirm(`Eliminare l\'operatore "${nome}"? Questa azione è irreversibile.`)) return;
   const {error}=await sb.from('operatori').delete().eq('id',id);
   if(error){showToast('Errore: impossibile eliminare (potrebbe avere registrazioni associate)','error');return;}
   showToast('Operatore eliminato','success');
@@ -1232,7 +1232,7 @@ async function toggleUtente(id, attivo) {
 }
 
 async function eliminaUtente(id, nome) {
-  if(!confirm(`Eliminare l'utente "${nome}"?`)) return;
+  if(!confirm(`Eliminare l\'utente "${nome}"?`)) return;
   const {error}=await sb.from('utenti_sistema').delete().eq('id',id);
   if(error){showToast('Impossibile eliminare questo utente','error');return;}
   showToast('Utente eliminato','success');
