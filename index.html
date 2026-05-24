@@ -212,12 +212,12 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
 </head>
 <body>
 
-<div class="toast" id="toast">
+<div class="toast" id="toast"></div>
 
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
-    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAA3ARMDASIAAhEBAxEB/8QAHQAAAgMBAQEBAQAAAAAAAAAAAAgFBgcEAgIBCf/EAE0QAAEDAwIDBQUFAwcGDwAAAAECAwQFBhEABxIhMQgTFEFLU0U6666666OAdD5/qNcW3F7V/bG6X2H4z/AIcO93Uqa77JyOXEM9FjyPQj4aqGzdrVW5b1hOwVeFh0x9uZOnrPC3FaQoKKir1ODgf/AICdXjfm9KRel3Jk0antIYipLIm8JDsznyJH5R+Hz5/Iaou3ECLh8pMiMrKs6lIrov8ATPE5mLxF4dMb7xgC2Y9PK/2tqDqOtbHfe2tnb1QqfdlKq64T6m+BUphpKi6gfgcQcYWk8s5yOnMY1b/uztdzbONYEuOuVS47PA244R3qV5J71KvJfESeXrjpy1XuzNalYtmy5LtYQuO5UpAkNxVe80jhABUPJR64+WtV0VFxKW9GbCyRbUDg/f8AFZLFcMhxZ7yGCFJva/I+3lfra9Idf1oXXs9fEd9iU83wOF2mVNkYS6kdQR0CsHCkHlz8wdNLsVuxTtxaT4eR3cO4IqAZcUHksdO9b9UnzHVJOD5E532yb0oT1Fj2TGWiVVUSkSnynmIqQlWAT+ZXF09OvUapfZIs2uVK/wCNdrSFx6RTO8S4+eQfWpBT3SfXGcnyGB5ka2MlCZ2G+0SRlWBoeePn/kVj2FGLO7lg3Sdxx/qnE0aNGsZWoo0aNGlSo0aNGlSo0aNGlSo0tW69/XZXdzX7IolaboEJmR4XvlPdyFq4cqUtzqB5ADHl66ZXWJ7o2btld17SY0i52qJciUoElAWkJd9kFJKV4BVjHQ56Z1V4shxbIDara82v5XrT9lHorMtS5CCoZTY5c2U6eIjgVV2NlK9LT3i9zYjrh5+w84sfrx6+w2v3gt7hftq8hMTnHCiatI+qXMpP66F9nAKT3sC82FpPRRh9fqleqhelp3Dtd4apU6+o7ry3u7DUOSpDyTgnJbJIKeWDn1GqRxnuU53GSkchev81uI8725zuWJqHCdkqZsD67U28BuQ1BjtSn/ESENJS67whPeKA5qwOQyeeNZf2oapUqTt9Fk0uoSoLxqLaC5HdKFFJSvlkeXIatu2NxP3Dt1SLhqvdMPyI/E+r3UcQUUlXPoDjP11Ru1qQdtYZByDU2sH/wEQWHy1HeRvY6H4VTTInPrCsiVDz3rGtzbW2VpdBkPWpe9Qn1VIBYilIfQ4c9CoISEjHnn6HWjbFU64L17N1x25JfdU24t2NSnHiegSlQQCfwBfL4ZI8tWyjdm7biC8h2Uiq1PhOeCTLwg/MICf79a3TIEKl09in06KzEiR0BDTLSAlCEjyAGpJuLtlkNtEqIIN1W0txTImHOBwrWAkEWsL9aT7YHcxO1dXqtu3XTJbMV98F/hb/fRXkjhPEg4ykjHTnyyM50xEfeza19kOpvCEgEZ4XG3EKH0Kc6lb622su9VB64KGxIlBPCmU2S28B5DjSQSPgcjWeyOzHt8anteOyy7e0C/Trm3U7QtnsWidsXpXbUr0uS+2fshb+70Wp/wXv7vTf00v8As9fEd9iU83wOF2mVNkYS6kdQR0CsHCkHlz8wdNLsVuxTtxaT4eR3cO4IqAZcUHksdO9b9UnzHVJOD5E532yb0oT1Fj2TGWiVVUSkSnynmIqQlWAT+ZXF09OvUapfZIs2uVK/wCNdrSFx6RTO8S4+eQfWpBT3SfXGcnyGB5ka2MlCZ2G+0SRlWBoeePn/kVj2FGLO7lg3Sdxx/qnE0aNGsZWoo0aNGlSo0aNGlSo0aNGlSo0tW69/XZXdzX7IolaboEJmR4XvlPdyFq4cqUtzqB5ADHl66ZXWJ7o2btld17SY0i52qJciUoElAWkJd9kFJKV4BVjHQ56Z1V4shxbIDara82v5XrT9lHorMtS5CCoZTY5c2U6eIjgVV2NlK9LT3i9zYjrh5+w84sfrx6+w2v3gt7hftq8hMTnHCiatI+qXMpP66F9nAKT3sC82FpPRRh9fqleqhelp3Dtd4apU6+o7ry3u7DUOSpDyTgnJbJIKeWDn1GqRxnuU53GSkchev81uI8725zuWJqHCdkqZsD67U28BuQ1BjtSn/ESENJS67whPeKA5qwOQyeeNZf2oapUqTt9Fk0uoSoLxqLaC5HdKFFJSvlkeXIatu2NxP3Dt1SLhqvdMPyI/E+r3UcQUUlXPoDjP11Ru1qQdtYZByDU2sH/wEQWHy1HeRvY6H4VTTInPrCsiVDz3rGtzbW2VpdBkPWpe9Qn1VIBYilIfQ4c9CoISEjHnn6HWjbFU64L17N1x25JfdU24t2NSnHiegSlQQCfwBfL4ZI8tWyjdm7biC8h2Uiq1PhOeCTLwg/MICf79a3TIEKl09in06KzEiR0BDTLSAlCEjyAGpJuLtlkNtEqIIN1W0txTImHOBwrWAkEWsL9aT7YHcxO1dXqtu3XTJbMV98F/hb/fRXkjhPEg4ykjHTnyyM50xEfeza19kOpvCEgEZ4XG3EKH0Kc6lb622su9VB64KGxIlBPCmU2S28B5DjSQSPgcjWeyOzHt8anteOyy7e0C/Trm3U7QtnsWidsXpXbUr0uS+2fshb+70Wp/wXv7vTf00v8As9fEd9iU83wOF2mVNkYS6kdQR0CsHCkHlz8wdNLsVuxTtxaT4eR3cO4IqAZcUHksdO9b9UnzHVJOD5E532yb0oT1Fj2TGWiVVUSkSnynmIqQlWAT+ZXF09OvUapfZIs2uVK/CNdrSFx6RTO8S4+eQfWpBT3SfXGcnyGB5ka2MlCZ2G+0SRlWBoeePn/kVj2FGLO7lg3Sdxx/qnE0aNGsZWoo0aNGlSo0aNGlSo0aNGlSo0tW69/XZXdzX7IolaboEJmR4XvlPdyFq4cqUtzqB5ADHl66ZXWJ7o2btld17SY0i52qJciUoElAWkJd9kFJKV4BVjHQ56Z1V4shxbIDara82v5XrT9lHorMtS5CCoZTY5c2U6eIjgVV2NlK9LT3i9zYjrh5+w84sfrx6+w2v3gt7hftq8hMTnHCiatI+qXMpP66F9nAKT3sC82FpPRRh9fqleqhelp3Dtd4apU6+o7ry3u7DUOSpDyTgnJbJIKeWDn1GqRxnuU53GSkchev81uI8725zuWJqHCdkqZsD67U28BuQ1BjtSn/ESENJS67whPeKA5qwOQyeeNZf2oapUqTt9Fk0uoSoLxqLaC5HdKFFJSvlkeXIatu2NxP3Dt1SLhqvdMPyI/E+r3UcQUUlXPoDjP11Ru1qQdtYZByDU2sH/wEQWHy1HeRvY6H4VTTInPrCsiVDz3rGtzbW2VpdBkPWpe9Qn1VIBYilIfQ4c9CoISEjHnn6HWjbFU64L17N1x25JfdU24t2NSnHiegSlQQCfwBfL4ZI8tWyjdm7biC8h2Uiq1PhOeCTLwg/MICf79a3TIEKl09in06KzEiR0BDTLSAlCEjyAGpJuLtlkNtEqIIN1W0txTImHOBwrWAkEWsL9aT7YHcxO1dXqtu3XTJbMV98F/hb/fRXkjhPEg4ykjHTnyyM50xEfeza19kOpvCEgEZ4XG3EKH0Kc6lb622su9VB64KGxIlBPCmU2S28B5DjSQSPgcjWeyOzHt8anteOyy7e0C/Trm3U7QtnsWidsXpXbUr0uS+2fshb+70Wp/X" alt="SO.MI.CA. S.p.A." style="height:56px;display:block;margin-bottom:12px">
+    <img src="data:image/jpeg;base64,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" alt="SO.MI.CA. S.p.A." style="height:56px;display:block;margin-bottom:12px">
     <div class="login-sub">Gestione Verde Pubblico e Diserbo — Carbonia</div>
     <div class="field"><label>Username</label><input type="text" id="login-user" placeholder="username" autocomplete="username"></div>
     <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
@@ -264,7 +264,6 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
     </div>
   </div>
 
-  <!-- MOBILE NAV -->
   <div id="mobile-nav">
     <button class="mnav-btn active" id="mnav-verde" onclick="switchModule('verde')">
       <span class="mnav-icon">🌿</span><span>Verde</span>
@@ -278,7 +277,6 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
   </div>
 </div>
 
-<!-- MODALE FORM REGISTRAZIONE -->
 <div class="modal-overlay hidden" id="modal-reg">
   <div class="modal">
     <div class="modal-header">
@@ -319,7 +317,6 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
           </div>
         </div>
 
-        <!-- CAMPI SPECIFICI DISERBO -->
         <div id="campi-diserbo-extra" class="hidden">
           <div class="form-row">
             <div class="field">
@@ -372,7 +369,6 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
   </div>
 </div>
 
-<!-- MODALE ADMIN (STRUTTURE) -->
 <div class="modal-overlay hidden" id="modal-admin-item">
   <div class="modal" style="max-width:440px">
     <div class="modal-header">
@@ -386,8 +382,7 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
           <label id="admin-label-nome">Nome / Descrizione *</label>
           <input type="text" id="admin-item-nome" required placeholder="Inserisci valore...">
         </div>
-        
-        <!-- Campi condizionali per settori -->
+
         <div id="admin-field-settore-area" class="field hidden">
           <label>Macro-Area di Appartenenza *</label>
           <select id="admin-settore-area-id">
@@ -395,7 +390,6 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
           </select>
         </div>
 
-        <!-- Campi condizionali per lavorazioni -->
         <div id="admin-fields-lavorazione" class="hidden">
           <div class="field" style="margin-bottom:10px">
             <div class="flag-box" id="flag-box-verifica" onclick="toggleAdminFlag('verifica')">
@@ -420,16 +414,14 @@ input, select, textarea, button { font-family: var(--font); font-size: 0.95rem; 
 </div>
 
 <script>
-// CONFIGURAZIONE SUPABASE
 const supabaseUrl = "https://wunclbshbyonvunhbxfo.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bmNsYnNoYnlvbnZ1bmhieGZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA0MTMwNzUsImV4cCI6MjA1NjAwOTA3NX0.4X8_YyqorP6MscfP93yG7Zq9oEul3UshjH0ZOf1l7pM";
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// STATO DELL'APPLICAZIONE
 let AppState = {
   user: null,
   profile: null,
-  currentModule: 'verde', // verde, diserbo, admin
+  currentModule: 'verde',
   dati: {
     macro_aree: [],
     settori: [],
@@ -448,10 +440,8 @@ let AppState = {
   selectedChipsOperatori: new Set()
 };
 
-// INIZIALIZZAZIONE
 window.addEventListener('DOMContentLoaded', async () => {
   setupDateFilters();
-  // Controlla sessione esistente
   const { data: { session } } = await _supabase.auth.getSession();
   if (session) {
     AppState.user = session.user;
@@ -466,7 +456,6 @@ function setupDateFilters() {
   AppState.filtri.data_fine = oggi.toISOString().split('T')[0];
 }
 
-// UTILITY DI NOTIFICA
 function showToast(msg, type='success') {
   const t = document.getElementById('toast');
   t.innerText = msg;
@@ -474,7 +463,6 @@ function showToast(msg, type='success') {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-// AUTENTICAZIONE
 async function doLogin() {
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value;
@@ -485,7 +473,6 @@ async function doLogin() {
   btn.disabled = true;
   btn.innerText = "Accesso in corso...";
 
-  // Trucco comodo: mappiamo una mail fittizia se l'utente mette solo lo username
   const email = u.includes('@') ? u : `${u}@somica.it`;
 
   const { data, error } = await _supabase.auth.signInWithPassword({ email, password: p });
@@ -510,7 +497,6 @@ async function doLogout() {
 }
 
 async function fetchProfiloEInizia() {
-  // Scarica il ruolo dell'utente dal db
   const { data, error } = await _supabase
     .from('profili_utenti')
     .select('*')
@@ -524,7 +510,6 @@ async function fetchProfiloEInizia() {
 
   AppState.profile = data;
   
-  // Imposta interfaccia utente
   document.getElementById('topbar-name').innerText = data.nome_completo || AppState.user.email;
   if(data.ruolo !== 'Amministratore') {
     document.getElementById('sidebar-admin-block').classList.add('hidden');
@@ -537,12 +522,10 @@ async function fetchProfiloEInizia() {
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
 
-  // Carica i dati base globali
   await scaricaDatiStrutturali();
   switchModule('verde');
 }
 
-// DOWNLOADING DATI CORE
 async function scaricaDatiStrutturali() {
   const [ma, se, op, la] = await Promise.all([
     _supabase.from('macro_aree').select('*').order('nome'),
@@ -571,7 +554,6 @@ async function scaricaRegistrazioni() {
     .order('data_intervento', { ascending: false })
     .order('creato_il', { ascending: false });
 
-  // Applicazione filtri temporali e combobox
   if(AppState.filtri.data_inizio) query = query.gte('data_intervento', AppState.filtri.data_inizio);
   if(AppState.filtri.data_fine) query = query.lte('data_intervento', AppState.filtri.data_fine);
   if(AppState.filtri.macro_area) query = query.eq('macro_area_id', AppState.filtri.macro_area);
@@ -579,22 +561,20 @@ async function scaricaRegistrazioni() {
   const { data, error } = await query;
   let risultati = data || [];
 
-  // Filtro lato client per operatore se selezionato (struttura array JSONB)
   if(AppState.filtri.operatore) {
-    const opId = AppState.filtri.operatore;
+    const opId = String(AppState.filtri.operatore);
     risultati = risultati.filter(r => {
-      return r.operatori_ids && Array.isArray(r.operatori_ids) && r.operatori_ids.includes(opId);
+      return r.operatori_ids && Array.isArray(r.operatori_ids) &&
+        r.operatori_ids.map(String).includes(opId);
     });
   }
 
   AppState.dati.registrazioni = risultati;
 }
 
-// LOGICA CAMBIO MODULO PRINCIPALE
 async function switchModule(mod) {
   AppState.currentModule = mod;
   
-  // Aggiorna classi bottoni navigazione desktop
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active', 'diserbo', 'admin'));
   const btnActive = document.getElementById(`nav-${mod}`);
   if(btnActive) {
@@ -603,7 +583,6 @@ async function switchModule(mod) {
     if(mod === 'admin') btnActive.classList.add('admin');
   }
 
-  // Aggiorna bottoni mobili
   document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('active', 'diserbo'));
   const mbtnActive = document.getElementById(`mnav-${mod}`);
   if(mbtnActive) {
@@ -611,11 +590,9 @@ async function switchModule(mod) {
     if(mod === 'diserbo') mbtnActive.classList.add('diserbo');
   }
 
-  // Cambia intestazione topbar contestuale
   document.getElementById('topbar-module').innerText = 
     mod === 'verde' ? 'VERDE PUBBLICO' : (mod === 'diserbo' ? 'DISERBO STRADALE' : 'AMMINISTRAZIONE');
 
-  // Renderizza la pagina corretta
   if (mod === 'admin') {
     renderPannelloAdmin();
   } else {
@@ -624,12 +601,10 @@ async function switchModule(mod) {
   }
 }
 
-// RENDER SCHERMATE OPERATIVE (VERDE / DISERBO)
 function renderModuloLavoro() {
   const isD = AppState.currentModule === 'diserbo';
   const c = document.getElementById('content');
   
-  // Calcolo semplici KPI statistiche veloci
   const totaleInterventi = AppState.dati.registrazioni.length;
   const completati = AppState.dati.registrazioni.filter(r => r.completato).length;
   const inCorso = totaleInterventi - completati;
@@ -641,7 +616,6 @@ function renderModuloLavoro() {
       <p class="page-sub">Gestione e consultazione degli interventi sul territorio comunale</p>
     </div>
 
-    <!-- STATISTICHE -->
     <div class="stats-grid">
       <div class="stat-card ${isD ? 'stat-diserbo':'stat-verde'}">
         <div class="stat-num">${totaleInterventi}</div>
@@ -657,7 +631,6 @@ function renderModuloLavoro() {
       </div>
     </div>
 
-    <!-- AZIONI E FILTRI -->
     <div class="filtri-bar">
       <div class="field">
         <label>Dal</label>
@@ -686,7 +659,6 @@ function renderModuloLavoro() {
       </button>
     </div>
 
-    <!-- LISTA RAPPORTO -->
     <div class="reg-list">
   `;
 
@@ -702,15 +674,14 @@ function renderModuloLavoro() {
     AppState.dati.registrazioni.forEach(r => {
       const dataFormattata = new Date(r.data_intervento).toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', year:'numeric'});
       
-      // Mappa i nomi degli operatori partendo dagli ID salvati
       const nomiOps = (r.operatori_ids || []).map(id => {
-        const o = AppState.dati.operatori.find(x => x.id === id);
+        const opId = String(id);
+        const o = AppState.dati.operatori.find(x => String(x.id) === opId);
         return o ? `${o.cognome} ${o.nome.charAt(0)}.` : '';
       }).filter(Boolean).join(', ');
 
-      // Mappa i dettagli delle lavorazioni
       const dettLav = Object.entries(r.lavorazioni_dettaglio || {}).map(([lavId, dettagli]) => {
-        const l = AppState.dati.lavorazioni.find(x => x.id === lavId);
+        const l = AppState.dati.lavorazioni.find(x => String(x.id) === String(lavId));
         if(!l) return '';
         let txt = l.nome;
         if(dettagli.esito_verifica) txt += ` (Esito: ${dettagli.esito_verifica})`;
@@ -760,7 +731,6 @@ async function aggiornaFiltri(chiave, valore) {
   renderModuloLavoro();
 }
 
-// APERTURA / GESTIONE MODALE RAPPORTO (INSERIMENTO ED EDIT)
 async function openModalReg(id = null) {
   const isD = AppState.currentModule === 'diserbo';
   const form = document.getElementById('form-reg');
@@ -769,30 +739,25 @@ async function openModalReg(id = null) {
   AppState.selectedChipsOperatori.clear();
   AppState.flagChiusoSelezionato = false;
 
-  // Carica le opzioni delle Macro-Aree nella modale
   const sArea = document.getElementById('reg-area');
   sArea.innerHTML = '<option value="">-- Seleziona Macro Area --</option>' + 
     AppState.dati.macro_aree.map(a=>`<option value="${a.id}">${a.nome}</option>`).join('');
 
-  // Sincronizza i campi speciali del diserbo
   const extraD = document.getElementById('campi-diserbo-extra');
   if(isD) extraD.classList.remove('hidden'); else extraD.classList.add('hidden');
 
-  // Genera Chips Operatori e Checkbox Lavorazioni dinamiche filtrate per tipologia modulo
   renderChipsOperatoriModale();
   renderChecklistLavorazioniModale();
 
   if(id) {
     document.getElementById('modal-reg-title').innerText = "Modifica Rapporto di Lavoro";
-    // Caricamento dati per modifica rapporto esistente
-    const r = AppState.dati.registrazioni.find(x => x.id === id);
+    const r = AppState.dati.registrazioni.find(x => String(x.id) === String(id));
     if(r) {
       document.getElementById('reg-id').value = r.id;
       document.getElementById('reg-data').value = r.data_intervento;
       document.getElementById('reg-turno').value = r.turno;
       document.getElementById('reg-area').value = r.macro_area_id;
       
-      // Carica i settori della macro-area e imposta quello corretto
       caricaSettoriFiltro(r.macro_area_id, 'reg-settore');
       document.getElementById('reg-settore').value = r.settore_via_id;
       
@@ -803,30 +768,25 @@ async function openModalReg(id = null) {
         document.getElementById('reg-quantita').value = r.diserbo_litri_miscela || '';
       }
 
-      // Ripristina stato operatori selezionati
       if(r.operatori_ids) {
-        r.operatori_ids.forEach(oid => AppState.selectedChipsOperatori.add(oid));
+        r.operatori_ids.forEach(oid => AppState.selectedChipsOperatori.add(String(oid)));
         renderChipsOperatoriModale();
       }
 
-      // Imposta stato flag completato
       AppState.flagChiusoSelezionato = !!r.completato;
       aggiornaGraficaFlagChiuso();
 
-      // Ripristina checklist e relativi sottomoduli d'errore o esito
       if(r.lavorazioni_dettaglio) {
         Object.keys(r.lavorazioni_dettaglio).forEach(lavId => {
           const cb = document.getElementById(`cb-lav-${lavId}`);
           if(cb) {
             cb.checked = true;
-            // Mostra blocco extra
             const wrapper = document.getElementById(`check-item-${lavId}`);
             if(wrapper) wrapper.classList.add('selected', isD ? 'diserbo-check' : 'semplice');
             
             const divExtra = document.getElementById(`extra-lav-${lavId}`);
             if(divExtra) divExtra.classList.remove('hidden');
 
-            // Popola i sotto-valori
             const esitoInput = document.getElementById(`extra-esito-${lavId}`);
             if(esitoInput) esitoInput.value = r.lavorazioni_dettaglio[lavId].esito_verifica || '';
 
@@ -839,7 +799,7 @@ async function openModalReg(id = null) {
   } else {
     document.getElementById('modal-reg-title').innerText = "Nuovo Rapporto Lavoro";
     document.getElementById('reg-id').value = '';
-    document.getElementById('reg-data').value = new Date().toISOString().split('T')[0]; // Oggi di default
+    document.getElementById('reg-data').value = new Date().toISOString().split('T')[0];
     caricaSettoriFiltro('', 'reg-settore');
     aggiornaGraficaFlagChiuso();
   }
@@ -857,36 +817,35 @@ function caricaSettoriFiltro(macroAreaId, idSelectTarget) {
     s.innerHTML = '<option value="">Seleziona prima la macro-area...</option>';
     return;
   }
-  const filtrati = AppState.dati.settori.filter(x => x.macro_area_id === macroAreaId);
+  const filtrati = AppState.dati.settori.filter(x => String(x.macro_area_id) === String(macroAreaId));
   s.innerHTML = filtrati.map(x=>`<option value="${x.id}">${x.nome}</option>`).join('');
 }
 
-// COMPONENTI CHIPS OPERATORI IN MODALE
 function renderChipsOperatoriModale() {
   const container = document.getElementById('reg-operatori-chips');
   const isD = AppState.currentModule === 'diserbo';
   
   container.innerHTML = AppState.dati.operatori.map(o => {
-    const sel = AppState.selectedChipsOperatori.has(o.id) ? `selected ${isD?'diserbo':''}` : '';
-    return `<div class="op-chip ${sel}" onclick="toggleChipOperatore('${o.id}')">${o.cognome} ${o.nome}</div>`;
+    const opId = String(o.id);
+    const sel = AppState.selectedChipsOperatori.has(opId) ? `selected ${isD ? 'diserbo' : ''}` : '';
+    return `<div class="op-chip ${sel}" onclick="toggleChipOperatore('${opId}')">${o.cognome} ${o.nome}</div>`;
   }).join('');
 }
 
 function toggleChipOperatore(id) {
-  if(AppState.selectedChipsOperatori.has(id)) AppState.selectedChipsOperatori.delete(id);
-  else AppState.selectedChipsOperatori.add(id);
+  const opId = String(id);
+  if(AppState.selectedChipsOperatori.has(opId)) AppState.selectedChipsOperatori.delete(opId);
+  else AppState.selectedChipsOperatori.add(opId);
   renderChipsOperatoriModale();
 }
 
-// COMPONENTI CHECKLIST LAVORAZIONI IN MODALE
 function renderChecklistLavorazioniModale() {
   const container = document.getElementById('reg-lavorazioni-check');
   const isD = AppState.currentModule === 'diserbo';
   
-  // Filtriamo le lavorazioni per macro tipo (es. se contengono o no la parola Diserbo nel nome o flag fittizio)
-  // Per sicurezza usiamo una logica flessibile: le lavorazioni che contengono "diserbo" vanno sul modulo diserbo, le altre sul verde
   const filtrate = AppState.dati.lavorazioni.filter(l => {
-    const cDis = l.nome.toLowerCase().includes('diserbo');
+    const nome = String(l.nome || '').toLowerCase();
+    const cDis = nome.includes('diserbo');
     return isD ? cDis : !cDis;
   });
 
@@ -903,7 +862,6 @@ function renderChecklistLavorazioniModale() {
           </div>
         </div>
         
-        <!-- Sotto-form che compare solo se selezionato e se la lavorazione prevede regole rigide -->
         <div class="check-extra hidden" id="extra-lav-${l.id}" onclick="event.stopPropagation()">
           ${l.richiede_verifica ? `
             <div class="field" style="margin-bottom:8px">
@@ -949,10 +907,8 @@ function handleCheckboxChange(id) {
   }
 }
 
-// GESTIONE FLAG STATO CHIUSO NELLA MODALE
 function toggleFlagChiuso() {
   AppState.flagChiusoSelezionato = !AppState.flagChiusoSelezionato;
-  hierarchyLog = AppState.currentModule === 'diserbo';
   aggiornaGraficaFlagChiuso();
 }
 
@@ -970,7 +926,6 @@ function aggiornaGraficaFlagChiuso() {
   }
 }
 
-// REQUISITO DI COMPILAZIONE SALVATAGGIO RAPPORTO
 async function salvaRegistrazione() {
   const id = document.getElementById('reg-id').value;
   const data_intervento = document.getElementById('reg-data').value;
@@ -988,7 +943,6 @@ async function salvaRegistrazione() {
     return showToast("Selezionare almeno un operatore della squadra", "error");
   }
 
-  // Costruiamo la mappa delle lavorazioni eseguite controllando i checkbox attivi
   const lavorazioni_dettaglio = {};
   let almenoUnaLavorazione = false;
   let erroreValidazioneValori = false;
@@ -1023,14 +977,13 @@ async function salvaRegistrazione() {
   spinner.classList.remove('hidden');
   btn.disabled = true;
 
-  // Record Payload pronto per DB Supabase
   const payload = {
     data_intervento,
     turno,
     macro_area_id,
     settore_via_id,
     note: note || null,
-    operatori_ids: Array.from(AppState.selectedChipsOperatori),
+    operatori_ids: Array.from(AppState.selectedChipsOperatori).map(id => isNaN(id) ? id : Number(id)),
     lavorazioni_dettaglio,
     completato: AppState.flagChiusoSelezionato,
     modulo_diserbo: isDiserbo,
@@ -1041,10 +994,8 @@ async function salvaRegistrazione() {
 
   let res;
   if(id) {
-    // Aggiornamento record esistente
     res = await _supabase.from('registrazioni_lavoro').update(payload).eq('id', id);
   } else {
-    // Inserimento nuovo record
     res = await _supabase.from('registrazioni_lavoro').insert([payload]);
   }
 
@@ -1061,8 +1012,6 @@ async function salvaRegistrazione() {
   }
 }
 
-
-// --- SEZIONE MODULO ADMIN (PANNELLO DI CONTROLLO) ---
 function renderPannelloAdmin() {
   const c = document.getElementById('content');
   c.innerHTML = `
@@ -1073,7 +1022,6 @@ function renderPannelloAdmin() {
     </div>
 
     <div class="admin-grid">
-      <!-- MACRO AREE -->
       <div class="card">
         <div class="card-header">
           <div>
@@ -1085,7 +1033,6 @@ function renderPannelloAdmin() {
         <div id="admin-list-macro" style="max-height:280px;overflow-y:auto"></div>
       </div>
 
-      <!-- VIE / SETTORI -->
       <div class="card">
         <div class="card-header">
           <div>
@@ -1097,7 +1044,6 @@ function renderPannelloAdmin() {
         <div id="admin-list-settori" style="max-height:280px;overflow-y:auto"></div>
       </div>
 
-      <!-- OPERATORI -->
       <div class="card">
         <div class="card-header">
           <div>
@@ -1109,7 +1055,6 @@ function renderPannelloAdmin() {
         <div id="admin-list-operatori" style="max-height:280px;overflow-y:auto"></div>
       </div>
 
-      <!-- TIPOLOGIE LAVORAZIONI -->
       <div class="card">
         <div class="card-header">
           <div>
@@ -1123,12 +1068,10 @@ function renderPannelloAdmin() {
     </div>
   `;
 
-  // Popola gli elenchi inseriti nell'interfaccia amministratore
   popolaListeTabelleAdmin();
 }
 
 function popolaListeTabelleAdmin() {
-  // 1. Macro aree
   const cMacro = document.getElementById('admin-list-macro');
   cMacro.innerHTML = AppState.dati.macro_aree.map(m => `
     <div class="list-item">
@@ -1137,10 +1080,9 @@ function popolaListeTabelleAdmin() {
     </div>
   `).join('') || '<div class="empty-state" style="padding:20px;font-size:0.85rem">Nessuna area configurata</div>';
 
-  // 2. Settori e vie
   const cSet = document.getElementById('admin-list-settori');
   cSet.innerHTML = AppState.dati.settori.map(s => {
-    const parent = AppState.dati.macro_aree.find(ma => ma.id === s.macro_area_id)?.nome || 'Non collegata';
+    const parent = AppState.dati.macro_aree.find(ma => String(ma.id) === String(s.macro_area_id))?.nome || 'Non collegata';
     return `
       <div class="list-item">
         <div>
@@ -1152,7 +1094,6 @@ function popolaListeTabelleAdmin() {
     `;
   }).join('') || '<div class="empty-state" style="padding:20px;font-size:0.85rem">Nessuna via inserita</div>';
 
-  // 3. Operatori
   const cOp = document.getElementById('admin-list-operatori');
   cOp.innerHTML = AppState.dati.operatori.map(o => `
     <div class="list-item">
@@ -1161,7 +1102,6 @@ function popolaListeTabelleAdmin() {
     </div>
   `).join('') || '<div class="empty-state" style="padding:20px;font-size:0.85rem">Nessun operatore inserito</div>';
 
-  // 4. Lavorazioni
   const cLav = document.getElementById('admin-list-lavorazioni');
   cLav.innerHTML = AppState.dati.lavorazioni.map(t => `
     <div class="list-item">
@@ -1180,20 +1120,17 @@ function popolaListeTabelleAdmin() {
   `).join('') || '<div class="empty-state" style="padding:20px;font-size:0.85rem">Nessuna lavorazione inserita</div>';
 }
 
-// APERTURA MODALE GESTIONE ANAGRAFICHE ADMIN
-let currentAdminType = ''; // macro_area, settore, operatore, lavorazione
+let currentAdminType = '';
 function openModalAdmin(tipo) {
   currentAdminType = tipo;
   const f = document.getElementById('form-admin-item');
   f.reset();
   document.getElementById('admin-item-id').value = '';
   
-  // Resetta i flag condizionali
   AppState.adminFlags.richiede_note = false;
   AppState.adminFlags.richiede_verifica = false;
   aggiornaGraficaFlagsAdmin();
 
-  // Hide automatico di tutti i blocchi dinamici estesi
   document.getElementById('admin-field-settore-area').classList.add('hidden');
   document.getElementById('admin-fields-lavorazione').classList.add('hidden');
 
@@ -1206,8 +1143,6 @@ function openModalAdmin(tipo) {
   } else if (tipo === 'settore') {
     titolo = "Aggiungi Nuova Via o Settore Stradale";
     label = "Nome della Via / Località Specifica *";
-    
-    // Popola select delle aree collegate
     const selectArea = document.getElementById('admin-settore-area-id');
     selectArea.innerHTML = AppState.dati.macro_aree.map(ma=>`<option value="${ma.id}">${ma.nome}</option>`).join('');
     document.getElementById('admin-field-settore-area').classList.remove('hidden');
@@ -1229,7 +1164,6 @@ function closeModalAdmin() {
   document.getElementById('modal-admin-item').classList.add('hidden');
 }
 
-// GESTIONE CHECKBOX INTERNI ALLA MODALE ADMIN
 function toggleAdminFlag(flag) {
   if (flag === 'verifica') AppState.adminFlags.richiede_verifica = !AppState.adminFlags.richiede_verifica;
   if (flag === 'note') AppState.adminFlags.richiede_note = !AppState.adminFlags.richiede_note;
@@ -1255,7 +1189,6 @@ function aggiornaGraficaFlagsAdmin() {
   }
 }
 
-// INSERIMENTO ELEMENTI NEL DATABASE DA PARTE DI ADMIN
 async function salvaElementoAdmin() {
   const nome = document.getElementById('admin-item-nome').value.trim();
   if(!nome) return showToast("Inserire il nome del campo obbligatorio", "error");
@@ -1270,12 +1203,11 @@ async function salvaElementoAdmin() {
     record.macro_area_id = document.getElementById('admin-settore-area-id').value;
   } else if(currentAdminType === 'operatore') {
     tabella = 'operatori';
-    // Dividiamo grossolanamente in nome e cognome per coerenza db
     const parti = nome.split(' ');
     record.cognome = parti[0];
     record.nome = parti.slice(1).join(' ') || ' ';
     record.attivo = true;
-    delete record.nome_completo; // Campo calcolato o non previsto in struttura diretta
+    delete record.nome_completo;
   } else if(currentAdminType === 'lavorazione') {
     tabella = 'tipologie_lavorazione';
     record.richiede_verifica = AppState.adminFlags.richiede_verifica;
@@ -1289,12 +1221,11 @@ async function salvaElementoAdmin() {
   } else {
     showToast("Nuovo elemento inserito correttamente nel sistema");
     closeModalAdmin();
-    await scaricaDatiStrutturali(); // Rinfresca anagrafica globale interna
+    await scaricaDatiStrutturali();
     renderPannelloAdmin();
   }
 }
 
-// CANCELLAZIONE DI UN ELEMENTO DA PARTE DELL'AMMINISTRATORE
 async function eliminaElementoAdmin(tabella, id) {
   if(!confirm("Sei sicuro di voler eliminare permanentemente questo elemento dall'anagrafica?")) return;
 
@@ -1308,7 +1239,6 @@ async function eliminaElementoAdmin(tabella, id) {
   }
 }
 
-// Funzione speciale dedicata all'eliminazione delle tipologie con gestione degli apici
 async function eliminaTipologia(id, nome) {
   if(!confirm(`Vuoi davvero eliminare la lavorazione "${nome}"?`)) return;
   
